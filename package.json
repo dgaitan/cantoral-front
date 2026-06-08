@@ -1,0 +1,70 @@
+{
+  "name": "cc-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "analyze": "ANALYZE=true next build",
+    "ci": "bun run type-check && bun run lint && bun run test:coverage"
+  },
+  "dependencies": {
+    "@heroui/react": "^3.1.0",
+    "@heroui/styles": "^3.1.0",
+    "@hookform/resolvers": "^5.4.0",
+    "axios": "^1.17.0",
+    "clsx": "^2.1.1",
+    "jose": "^6.2.3",
+    "js-cookie": "^3.0.8",
+    "next": "16.2.7",
+    "next-themes": "^0.4.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.78.0",
+    "reveal.js": "^6.0.1",
+    "swr": "^2.4.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.7",
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/reveal.js": "^5.2.2",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/ui": "^4.1.8",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.7",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.60.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
+  },
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
+}
