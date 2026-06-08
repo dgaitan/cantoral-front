@@ -1,56 +1,75 @@
 "use client";
 
 import Link from "next/link";
-import { useAuthStore } from "@/store/authStore";
-import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { Search, User } from "lucide-react";
+import { Logo } from "@/components/atoms/Logo/Logo";
 
 export function Navbar() {
-  const { isAuthenticated, user } = useAuthStore();
-  const { logout } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-default-200 bg-background/80 backdrop-blur-sm">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 30,
+        padding: "12px 18px",
+        background: scrolled ? "rgba(250,247,241,0.88)" : "var(--paper)",
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: `1px solid ${scrolled ? "var(--line)" : "transparent"}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        transition: "all 0.2s",
+      }}
+    >
+      <Link href="/" style={{ textDecoration: "none" }}>
+        <Logo size={24} />
+      </Link>
+      <div style={{ display: "flex", gap: 8 }}>
         <Link
-          href="/"
-          className="font-bold text-foreground hover:text-primary transition-colors"
+          href="/explorar"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            border: "1px solid var(--line)",
+            background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--ink)",
+          }}
+          aria-label="Buscar"
         >
-          Cancionero Católico
+          <Search size={20} />
         </Link>
-
-        <div className="flex items-center gap-6 text-sm">
-          <Link
-            href="/canciones"
-            className="text-foreground/70 hover:text-foreground transition-colors"
-          >
-            Canciones
-          </Link>
-
-          {isAuthenticated ? (
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="text-foreground/70 hover:text-foreground transition-colors"
-              >
-                {user?.name ?? "Mi cuenta"}
-              </Link>
-              <button
-                onClick={() => void logout()}
-                className="text-foreground/50 hover:text-danger text-xs transition-colors"
-              >
-                Salir
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/auth/login"
-              className="rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium hover:bg-primary/90 transition-colors"
-            >
-              Entrar
-            </Link>
-          )}
-        </div>
-      </nav>
+        <Link
+          href="/auth/login"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            border: "1px solid var(--line)",
+            background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--ink)",
+          }}
+          aria-label="Mi cuenta"
+        >
+          <User size={20} />
+        </Link>
+      </div>
     </header>
   );
 }
