@@ -15,8 +15,8 @@ const mockSong: SongListItem = {
   tone: "G",
   created_at: null,
   updated_at: null,
-  authors: [],
-  categories: [],
+  authors: [{ id: "1", name: "John Newton", slug: "john-newton" }],
+  categories: [{ id: "entrada", name: "Entrada", slug: "entrada" }],
 };
 
 describe("SongCard", () => {
@@ -31,8 +31,13 @@ describe("SongCard", () => {
     expect(link).toHaveAttribute("href", "/canciones/42-gracia-admirable");
   });
 
-  it("renders short description when present", () => {
+  it("renders the author name", () => {
     render(<SongCard song={mockSong} />);
-    expect(screen.getByText("Un himno clásico")).toBeInTheDocument();
+    expect(screen.getByText("John Newton")).toBeInTheDocument();
+  });
+
+  it("renders the category label in CoverArt", () => {
+    render(<SongCard song={mockSong} />);
+    expect(screen.getByText("Gracia Admirable")).toBeInTheDocument();
   });
 });

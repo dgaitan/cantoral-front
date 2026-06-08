@@ -2,3 +2,6 @@ export { SongCard } from "./SongCard/SongCard";
 export { SearchBar } from "./SearchBar/SearchBar";
 export { LyricsLine } from "./LyricsLine/LyricsLine";
 export { MagicLinkForm } from "./MagicLinkForm/MagicLinkForm";
+export { SongRow } from "./SongRow/SongRow";
+export { CategoryChips } from "./CategoryChips/CategoryChips";
+export { SectionHead } from "./SectionHead/SectionHead";
