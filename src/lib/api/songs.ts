@@ -1,10 +1,11 @@
-import type { DjangoResponse, PaginatedResponse, Song, SongListItem } from "@/types";
+import type { DjangoResponse, PaginatedResponse, Song, SongListItem, Category } from "@/types";
 import { apiClient } from "./client";
 
 export interface SongsQuery {
   page?: number;
   limit?: number;
   search?: string;
+  category?: string;
 }
 
 export async function fetchSongs(
@@ -20,6 +21,19 @@ export async function fetchSongs(
 export async function fetchSong(id: string): Promise<DjangoResponse<Song>> {
   const { data } = await apiClient.get<DjangoResponse<Song>>(`/songs/${id}/`);
   return data;
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+  try {
+    const { data } = await apiClient.get<{ data?: { results?: Category[] } | Category[] }>(
+      "/categories/"
+    );
+    const payload = data.data;
+    if (Array.isArray(payload)) return payload;
+    return (payload as { results?: Category[] })?.results ?? [];
+  } catch {
+    return [];
+  }
 }
 
 export async function transposeSong(

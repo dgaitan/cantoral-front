@@ -10,6 +10,7 @@ interface SearchBarProps {
   glass?: boolean;
   onFocus?: () => void;
   readOnly?: boolean;
+  defaultValue?: string;
 }
 
 export function SearchBar({
@@ -18,8 +19,9 @@ export function SearchBar({
   glass = false,
   onFocus,
   readOnly = false,
+  defaultValue = "",
 }: SearchBarProps) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultValue);
   const debounced = useDebounce(value, 300);
 
   useEffect(() => {

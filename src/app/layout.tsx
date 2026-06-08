@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { BottomNav } from "@/components/organisms/BottomNav/BottomNav";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="light">
           {children}
+          <BottomNav />
         </ThemeProvider>
       </body>
     </html>

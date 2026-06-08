@@ -67,3 +67,24 @@ export function lyricsToPlainText(raw: string): string {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/** Split lyrics into presentation slides (one per stanza), strip chord markers. */
+export function lyricsToSlides(
+  raw: string,
+  options: { withChords?: boolean; transposer?: (chord: string) => string } = {}
+): string[] {
+  const { withChords = false, transposer } = options;
+  return raw
+    .split(/\n\s*\n/)
+    .map((block) => {
+      const trimmed = block.trim();
+      if (!trimmed) return null;
+      if (withChords) {
+        return trimmed.replace(/\{([^}]+)\}/g, (_, name: string) =>
+          `[${transposer ? transposer(name) : name}]`
+        );
+      }
+      return trimmed.replace(/\{[^}]+\}/g, "").replace(/[ \t]+/g, " ").trim();
+    })
+    .filter(Boolean) as string[];
+}
