@@ -2,26 +2,41 @@
 @import "@heroui/styles";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink:       #0a1d2b;
+  --ink-700:   #13344a;
+  --paper:     #faf7f1;
+  --paper-2:   #efe9dd;
+  --gold:      #dec42e;
+  --gold-soft: rgba(222, 196, 46, 0.2);
+  --orange:    #e37f3b;
+  --muted:     #5d6b75;
+  --line:      rgba(10, 29, 43, 0.1);
+  --cream:     #f3ead6;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-foreground:  var(--foreground);
+  --color-ink:         var(--ink);
+  --color-ink-700:     var(--ink-700);
+  --color-paper:       var(--paper);
+  --color-paper-2:     var(--paper-2);
+  --color-gold:        var(--gold);
+  --color-gold-soft:   var(--gold-soft);
+  --color-orange:      var(--orange);
+  --color-muted:       var(--muted);
+  --color-line:        var(--line);
+  --color-cream:       var(--cream);
+  --font-sans:  var(--font-hanken);
+  --font-serif: var(--font-newsreader);
+  --font-mono:  var(--font-jetbrains);
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-hanken), Arial, Helvetica, sans-serif;
 }
