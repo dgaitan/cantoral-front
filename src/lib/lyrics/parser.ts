@@ -4,6 +4,35 @@ export type LyricsToken =
 
 export type LyricsLine = LyricsToken[];
 
+export interface LyricsBlock {
+  label: string;
+  lines: LyricsLine[];
+  isChorus: boolean;
+}
+
+const SECTION_LABEL_RE =
+  /^(estribillo|coro|estrofa|verso|puente|interludio|\d+[.)]?)\s*$/i;
+
+export function parseLyricsIntoBlocks(raw: string): LyricsBlock[] {
+  const rawBlocks = raw.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+  let estrofaCount = 0;
+  return rawBlocks.map((block) => {
+    const blockLines = block.split("\n");
+    const firstLine = blockLines[0] ?? "";
+    const hasLabel =
+      !firstLine.includes("{") && SECTION_LABEL_RE.test(firstLine);
+    const label = hasLabel
+      ? firstLine.trim()
+      : `Estrofa ${++estrofaCount}`;
+    const contentLines = hasLabel ? blockLines.slice(1) : blockLines;
+    return {
+      label,
+      lines: contentLines.map(parseLine),
+      isChorus: /estribillo|coro/i.test(label),
+    };
+  });
+}
+
 export function parseLyrics(raw: string): LyricsLine[] {
   return raw.split("\n").map(parseLine);
 }
