@@ -1,3 +1,4 @@
+export { LiturgyMoments } from "./LiturgyMoments/LiturgyMoments";
 export { SongCard } from "./SongCard/SongCard";
 export { SearchBar } from "./SearchBar/SearchBar";
 export { LyricsLine } from "./LyricsLine/LyricsLine";
