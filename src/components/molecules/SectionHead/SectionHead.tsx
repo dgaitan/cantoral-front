@@ -1,17 +1,18 @@
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
 interface SectionHeadProps {
   title: string;
   kicker?: string;
   action?: string;
-  onAction?: () => void;
+  actionHref?: string;
 }
 
 export function SectionHead({
   title,
   kicker,
   action,
-  onAction,
+  actionHref,
 }: SectionHeadProps) {
   return (
     <div
@@ -53,26 +54,23 @@ export function SectionHead({
           {title}
         </h2>
       </div>
-      {action && (
-        <button
-          onClick={onAction}
+      {action && actionHref && (
+        <Link
+          href={actionHref}
           style={{
             display: "flex",
             alignItems: "center",
             gap: 3,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
             fontFamily: "var(--font-hanken)",
             fontSize: 13.5,
             fontWeight: 600,
             color: "var(--muted)",
-            padding: 0,
+            textDecoration: "none",
           }}
         >
           {action}
           <ChevronRight size={15} aria-hidden="true" />
-        </button>
+        </Link>
       )}
     </div>
   );

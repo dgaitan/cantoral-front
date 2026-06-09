@@ -26,6 +26,6 @@ export default defineConfig({
         branches: 60,
       },
     },
-    include: ["src/**/*.test.{ts,tsx}"],
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
   },
 });
