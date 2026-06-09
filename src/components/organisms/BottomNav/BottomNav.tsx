@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Search, ListMusic, User } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 const NAV_ITEMS = [
   { id: "home", label: "Inicio", icon: Home, href: "/" },
@@ -28,21 +29,7 @@ export function BottomNav() {
 
   return (
     <nav
-      style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 40,
-        paddingBottom: 24,
-        paddingTop: 9,
-        background: "rgba(250,247,241,0.92)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-        borderTop: "1px solid var(--line)",
-        display: "flex",
-        justifyContent: "space-around",
-      }}
+      className="fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-line bg-paper/[0.92] pt-[9px] pb-2 backdrop-blur-[14px]"
       aria-label="Navegación principal"
     >
       {NAV_ITEMS.map(({ id, label, icon: Icon, href }) => {
@@ -51,24 +38,18 @@ export function BottomNav() {
           <Link
             key={id}
             href={href}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 4,
-              padding: "2px 14px",
-              color: active ? "var(--orange)" : "var(--muted)",
-              textDecoration: "none",
-            }}
+            className={cn(
+              "flex flex-col items-center gap-1 px-[14px] py-[2px] no-underline",
+              active ? "text-orange" : "text-muted"
+            )}
             aria-current={active ? "page" : undefined}
           >
             <Icon size={23} aria-hidden="true" />
             <span
-              style={{
-                fontFamily: "var(--font-hanken)",
-                fontSize: 10.5,
-                fontWeight: active ? 700 : 600,
-              }}
+              className={cn(
+                "font-sans text-[10.5px]",
+                active ? "font-bold" : "font-semibold"
+              )}
             >
               {label}
             </span>
