@@ -66,6 +66,18 @@ Atomic design under `src/components/`:
 - `organisms/` — LyricsRenderer, ChordControls, SongDetail, Navbar, BottomNav, RevealPresentation, SongList
 - `templates/` — PublicLayout, DashboardLayout, PresentationLayout
 
+### Component Standards
+
+**HeroUI-first rule:** Before building any UI component, check if HeroUI has one. Always use HeroUI components for inputs, buttons, selects, modals, OTP inputs, and toasts.
+
+**No inline styles. Ever.** Use Tailwind classes exclusively. `style={{}}` objects are forbidden in all component and page files. Conditional styles use `cn()` with class strings.
+
+**Toast:** Use `Toast.toast.success()` and `Toast.toast.danger()` from `@heroui/react`. Note: HeroUI uses `.danger()` not `.error()`. Layout must include `<Toast.Provider>`.
+
+**Form inputs:** Use HeroUI `<Input>` with `isInvalid` and `errorMessage` props for validation feedback. Use `startContent` / `endContent` for icons — no manual positioning.
+
+**Reference pattern:** `src/components/molecules/LoginForm/LoginForm.tsx` (post-refactor).
+
 ### API Layer (`src/lib/api/`)
 
 `client.ts` exports a singleton Axios instance pointed at `NEXT_PUBLIC_API_URL`. Server Components and Route Handlers use `API_URL_INTERNAL` instead (bypasses the public gateway). Song detail pages fetch at `revalidate: 3600`.

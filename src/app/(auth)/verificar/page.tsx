@@ -8,41 +8,35 @@ function VerificarContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { verifyToken } = useAuth();
-  const [status, setStatus] = useState<"loading" | "error">("loading");
-  const [errorMsg, setErrorMsg] = useState("");
+
+  const email = searchParams.get("email");
+  const token = searchParams.get("token");
+
+  const [error, setError] = useState<string | null>(
+    !email || !token ? "Enlace inválido. Faltan parámetros." : null
+  );
 
   useEffect(() => {
-    const email = searchParams.get("email");
-    const token = searchParams.get("token");
-
-    if (!email || !token) {
-      setErrorMsg("Enlace inválido. Faltan parámetros.");
-      setStatus("error");
-      return;
-    }
-
+    if (!email || !token) return;
     verifyToken(email, token)
       .then(() => router.replace("/dashboard"))
       .catch((err: unknown) => {
-        setErrorMsg(
-          err instanceof Error ? err.message : "Verificación fallida."
-        );
-        setStatus("error");
+        setError(err instanceof Error ? err.message : "Verificación fallida.");
       });
-  }, [searchParams, verifyToken, router]);
+  }, [email, token, verifyToken, router]);
 
-  if (status === "loading") {
+  if (error) {
     return (
       <div className="text-center">
-        <p className="text-foreground/60">Verificando enlace…</p>
+        <h1 className="text-xl font-bold text-danger mb-2">Error</h1>
+        <p className="text-foreground/60">{error}</p>
       </div>
     );
   }
 
   return (
     <div className="text-center">
-      <h1 className="text-xl font-bold text-danger mb-2">Error</h1>
-      <p className="text-foreground/60">{errorMsg}</p>
+      <p className="text-foreground/60">Verificando enlace…</p>
     </div>
   );
 }

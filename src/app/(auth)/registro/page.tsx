@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { MagicLinkForm } from "@/components/molecules/MagicLinkForm/MagicLinkForm";
-import { useAuth } from "@/hooks/useAuth";
+import { requestMagicLink } from "@/lib/api/auth";
 
 export default function RegistroPage() {
-  const { login } = useAuth();
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +13,7 @@ export default function RegistroPage() {
     setLoading(true);
     setError(null);
     try {
-      await login(email);
+      await requestMagicLink(email);
       setSent(true);
     } catch {
       setError("No se pudo crear la cuenta. Intenta nuevamente.");

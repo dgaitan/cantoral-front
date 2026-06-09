@@ -2,8 +2,9 @@
 
 import { useAuthStore } from "@/store/authStore";
 import {
-  requestMagicLink,
-  verifyMagicLink,
+  loginWithPassword,
+  registerUser,
+  verifyOtp,
   logoutUser,
   fetchCurrentUser,
 } from "@/lib/api/auth";
@@ -12,12 +13,16 @@ import { setMemoryToken } from "@/lib/auth/token";
 export function useAuth() {
   const { user, isAuthenticated, setUser, clearAuth } = useAuthStore();
 
-  async function login(email: string): Promise<void> {
-    await requestMagicLink(email);
+  async function login(email: string, password: string): Promise<void> {
+    await loginWithPassword(email, password);
+  }
+
+  async function register(name: string, email: string, password: string): Promise<void> {
+    await registerUser(name, email, password);
   }
 
   async function verifyToken(email: string, token: string): Promise<void> {
-    const authResponse = await verifyMagicLink(email, token);
+    const authResponse = await verifyOtp(email, token);
     if (!authResponse.success || !authResponse.data) {
       throw new Error("Verificación fallida");
     }
@@ -44,5 +49,5 @@ export function useAuth() {
     clearAuth();
   }
 
-  return { user, isAuthenticated, login, verifyToken, logout };
+  return { user, isAuthenticated, login, register, verifyToken, logout };
 }

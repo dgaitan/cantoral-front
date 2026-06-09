@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { cn } from "@/lib/utils/cn";
+import { TextField, Input, FieldError, Button } from "@heroui/react";
 
 const schema = z.object({
   email: z.string().email("Ingresa un correo electrónico válido"),
@@ -28,33 +28,22 @@ export function MagicLinkForm({ onSubmit, loading = false }: MagicLinkFormProps)
       onSubmit={handleSubmit(({ email }) => onSubmit(email))}
       className="flex flex-col gap-4 w-full max-w-sm"
     >
-      <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium">
-          Correo electrónico
-        </label>
-        <input
-          id="email"
+      <TextField isInvalid={!!errors.email}>
+        <Input
           type="email"
           autoComplete="email"
           placeholder="tu@correo.com"
-          className={cn(
-            "rounded-xl border border-default-200 bg-content1 px-4 py-2 text-sm",
-            "outline-none focus:border-primary transition-colors",
-            errors.email && "border-danger"
-          )}
           {...register("email")}
         />
-        {errors.email && (
-          <p className="text-xs text-danger">{errors.email.message}</p>
-        )}
-      </div>
-      <button
+        <FieldError>{errors.email?.message}</FieldError>
+      </TextField>
+      <Button
         type="submit"
-        disabled={loading}
-        className="rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold disabled:opacity-50 transition-opacity"
+        isDisabled={loading}
+        className="w-full font-semibold bg-orange text-white"
       >
         {loading ? "Enviando…" : "Enviar enlace"}
-      </button>
+      </Button>
     </form>
   );
 }

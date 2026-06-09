@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { id: "home", label: "Inicio", icon: Home, href: "/" },
   { id: "explorar", label: "Explorar", icon: Search, href: "/explorar" },
   { id: "listas", label: "Listas", icon: ListMusic, href: "/listas" },
-  { id: "cuenta", label: "Cuenta", icon: User, href: "/auth/login" },
+  { id: "cuenta", label: "Cuenta", icon: User, href: "/login" },
 ] as const;
 
 function resolveTab(pathname: string): string {
