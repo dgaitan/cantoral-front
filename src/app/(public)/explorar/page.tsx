@@ -8,7 +8,10 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { CategoryChips } from "@/components/molecules/CategoryChips/CategoryChips";
 import { SongRow } from "@/components/molecules/SongRow/SongRow";
+import { PaginationBar } from "@/components/molecules/PaginationBar/PaginationBar";
 import { buildSongParam } from "@/lib/utils/song-param";
+
+const PAGE_SIZE = 20;
 
 function ExplorarContent() {
   const router = useRouter();
@@ -17,58 +20,51 @@ function ExplorarContent() {
   const [activeTagId, setActiveTagId] = useState<string>(
     searchParams.get("tag_id") ?? "all"
   );
+  const [page, setPage] = useState(Number(searchParams.get("page") ?? "1"));
   const debouncedSearch = useDebounce(search, 300);
-
   const authorIdParam = searchParams.get("author_id");
 
   const { data: songsData, isLoading } = useSongs({
     search: debouncedSearch || undefined,
     tag_id: activeTagId !== "all" ? Number(activeTagId) : undefined,
     author_id: authorIdParam ? Number(authorIdParam) : undefined,
+    page,
   });
 
   const { data: categories = [] } = useCategories();
   const songs = songsData?.data?.results ?? [];
   const count = songsData?.data?.count ?? 0;
+  const totalPages = Math.ceil(count / PAGE_SIZE);
+
+  function updateParams(updates: Record<string, string | null>) {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([k, v]) =>
+      v == null ? params.delete(k) : params.set(k, v)
+    );
+    router.replace(`/explorar?${params.toString()}`, { scroll: false });
+  }
 
   function handleSearch(q: string) {
     setSearch(q);
-    const params = new URLSearchParams(searchParams.toString());
-    if (q) params.set("q", q); else params.delete("q");
-    router.replace(`/explorar?${params.toString()}`, { scroll: false });
+    setPage(1);
+    updateParams({ q: q || null, page: null });
   }
 
   function handleCategory(id: string) {
     setActiveTagId(id);
-    const params = new URLSearchParams(searchParams.toString());
-    if (id !== "all") params.set("tag_id", id); else params.delete("tag_id");
-    router.replace(`/explorar?${params.toString()}`, { scroll: false });
+    setPage(1);
+    updateParams({ tag_id: id !== "all" ? id : null, page: null });
+  }
+
+  function handlePage(newPage: number) {
+    setPage(newPage);
+    updateParams({ page: newPage > 1 ? String(newPage) : null });
   }
 
   return (
-    <div style={{ background: "var(--paper)", minHeight: "100vh" }}>
-      {/* Sticky header */}
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          background: "rgba(250,247,241,0.95)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          borderBottom: "1px solid var(--line)",
-          padding: "16px 20px 0",
-        }}
-      >
-        <h1
-          style={{
-            fontFamily: "var(--font-newsreader)",
-            fontSize: 26,
-            fontWeight: 600,
-            color: "var(--ink)",
-            margin: "0 0 14px",
-          }}
-        >
+    <div className="bg-paper min-h-screen">
+      <div className="sticky -top-[60px] z-20 bg-paper/95 backdrop-blur-md border-b border-line px-5 pt-4 pb-2">
+        <h1 className="font-serif text-[26px] font-semibold text-ink mb-3.5">
           Explorar
         </h1>
         <SearchBar
@@ -76,7 +72,7 @@ function ExplorarContent() {
           onSearch={handleSearch}
           placeholder="Buscar canción, autor, tono…"
         />
-        <div style={{ marginTop: 12, marginBottom: 0 }}>
+        <div className="mt-3 mb-0">
           <CategoryChips
             categories={categories}
             activeId={activeTagId}
@@ -85,53 +81,22 @@ function ExplorarContent() {
         </div>
       </div>
 
-      {/* Count bar */}
-      <div
-        style={{
-          padding: "12px 20px 0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-hanken)",
-            fontSize: 13,
-            color: "var(--muted)",
-          }}
-        >
+      <div className="flex items-center justify-between px-5 pt-3">
+        <span className="text-[13px] text-muted">
           {isLoading ? "Cargando…" : `${count} canciones`}
         </span>
       </div>
 
-      {/* Song list */}
-      <div style={{ padding: "4px 20px 0" }}>
+      <div className="px-5 pt-1">
         {isLoading && songs.length === 0 && (
-          <div
-            style={{
-              padding: "40px 0",
-              textAlign: "center",
-              color: "var(--muted)",
-              fontFamily: "var(--font-hanken)",
-            }}
-          >
-            Cargando canciones…
-          </div>
+          <div className="py-10 text-center text-muted">Cargando canciones…</div>
         )}
         {!isLoading && songs.length === 0 && (
-          <div
-            style={{
-              padding: "40px 0",
-              textAlign: "center",
-              color: "var(--muted)",
-              fontFamily: "var(--font-hanken)",
-            }}
-          >
+          <div className="py-10 text-center text-muted">
             No se encontraron canciones
           </div>
         )}
-        {songs.map((song, i) => (
+        {songs.map((song) => (
           <SongRow
             key={song.id}
             song={song}
@@ -140,7 +105,13 @@ function ExplorarContent() {
         ))}
       </div>
 
-      <div style={{ height: 90 }} />
+      {totalPages > 1 && (
+        <div className="flex justify-center py-6">
+          <PaginationBar page={page} totalPages={totalPages} onChange={handlePage} />
+        </div>
+      )}
+
+      <div className="h-[90px]" />
     </div>
   );
 }

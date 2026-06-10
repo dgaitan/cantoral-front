@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
+import { cn } from "@/lib/utils/cn";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
@@ -36,22 +37,17 @@ export function SearchBar({
 
   return (
     <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        background: glass ? "rgba(255,255,255,0.1)" : "#fff",
-        border: `1px solid ${glass ? "rgba(243,234,214,0.18)" : "var(--line)"}`,
-        borderRadius: 14,
-        padding: "13px 15px",
-        boxShadow: glass ? "none" : "0 1px 2px rgba(10,29,43,0.04)",
-        backdropFilter: glass ? "blur(8px)" : "none",
-      }}
+      className={cn(
+        "flex items-center gap-2.5 rounded-[14px] px-[15px] py-3",
+        glass
+          ? "bg-white/10 border border-[rgba(243,234,214,0.18)] backdrop-blur-sm"
+          : "bg-white border border-line shadow-[0_1px_2px_rgba(10,29,43,0.04)]"
+      )}
     >
       <Search
         size={20}
         aria-hidden="true"
-        style={{ color: glass ? "var(--gold)" : "var(--muted)", flexShrink: 0 }}
+        className={cn("shrink-0", glass ? "text-gold" : "text-muted")}
       />
       <input
         type="search"
@@ -61,16 +57,12 @@ export function SearchBar({
         onFocus={onFocus}
         readOnly={readOnly}
         aria-label="Buscar canciones"
-        style={{
-          border: "none",
-          outline: "none",
-          flex: 1,
-          fontFamily: "var(--font-hanken)",
-          fontSize: 15,
-          color: glass ? "rgba(243,234,214,0.7)" : "var(--ink)",
-          background: "transparent",
-          minWidth: 0,
-        }}
+        className={cn(
+          "flex-1 min-w-0 bg-transparent border-none outline-none text-[15px]",
+          glass
+            ? "text-[rgba(243,234,214,0.7)] placeholder:text-[rgba(243,234,214,0.4)]"
+            : "text-ink placeholder:text-muted"
+        )}
       />
     </div>
   );

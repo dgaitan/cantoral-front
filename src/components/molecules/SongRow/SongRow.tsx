@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CoverArt } from "@/components/atoms/CoverArt/CoverArt";
 import { KeyBadge } from "@/components/atoms/KeyBadge/KeyBadge";
+import { cn } from "@/lib/utils/cn";
 import type { SongListItem } from "@/types/song";
 
 interface SongRowProps {
@@ -15,61 +16,21 @@ export function SongRow({ song, index, href }: SongRowProps) {
   return (
     <Link
       href={href}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 13,
-        width: "100%",
-        textAlign: "left",
-        padding: "9px 0",
-        textDecoration: "none",
-      }}
+      className="flex items-center gap-3 w-full py-[9px] no-underline"
       data-testid="song-row"
     >
       {index != null && (
-        <span
-          style={{
-            width: 18,
-            textAlign: "center",
-            fontFamily: "var(--font-hanken)",
-            fontSize: 13,
-            fontWeight: 700,
-            color: "var(--muted)",
-            flexShrink: 0,
-          }}
-        >
+        <span className="w-[18px] text-center text-[13px] font-bold text-muted shrink-0">
           {index}
         </span>
       )}
       <CoverArt song={song} size={52} radius={12} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div
-          style={{
-            fontFamily: "var(--font-hanken)",
-            fontSize: 15.5,
-            fontWeight: 600,
-            color: "var(--ink)",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
+      <div className="flex-1 min-w-0">
+        <div className={cn("text-[15.5px] font-semibold text-ink truncate")}>
           {song.name}
         </div>
         {author && (
-          <div
-            style={{
-              fontFamily: "var(--font-hanken)",
-              fontSize: 13,
-              color: "var(--muted)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              marginTop: 2,
-            }}
-          >
-            {author}
-          </div>
+          <div className="text-[13px] text-muted truncate mt-0.5">{author}</div>
         )}
       </div>
       {song.tone && <KeyBadge tone={song.tone} />}

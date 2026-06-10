@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@heroui/react";
+import { cn } from "@/lib/utils/cn";
 import type { Category } from "@/types/song";
 
 interface CategoryChipsProps {
@@ -16,40 +18,24 @@ export function CategoryChips({
   const chips = [{ id: "all", name: "Todas" }, ...categories];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: 8,
-        overflowX: "auto",
-        scrollbarWidth: "none",
-        paddingBottom: 2,
-      }}
-    >
+    <div className="flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {chips.map((c) => {
         const active = activeId === c.id;
         return (
-          <button
+          <Button
             key={c.id}
-            onClick={() => onChange(c.id as string | "all")}
-            style={{
-              flexShrink: 0,
-              display: "inline-flex",
-              alignItems: "center",
-              padding: "8px 14px",
-              borderRadius: 999,
-              cursor: "pointer",
-              fontFamily: "var(--font-hanken)",
-              fontSize: 13.5,
-              fontWeight: 600,
-              whiteSpace: "nowrap",
-              border: `1px solid ${active ? "var(--ink)" : "var(--line)"}`,
-              background: active ? "var(--ink)" : "#fff",
-              color: active ? "#fff" : "var(--ink)",
-              transition: "all 0.15s ease",
-            }}
+            size="sm"
+            variant="ghost"
+            onPress={() => onChange(c.id as string | "all")}
+            className={cn(
+              "shrink-0 rounded-full text-[13.5px] font-semibold px-3.5 border transition-all duration-150",
+              active
+                ? "bg-ink text-white border-ink hover:bg-ink/90"
+                : "bg-white text-ink border-line hover:bg-paper-2"
+            )}
           >
             {c.name}
-          </button>
+          </Button>
         );
       })}
     </div>

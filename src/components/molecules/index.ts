@@ -6,3 +6,4 @@ export { MagicLinkForm } from "./MagicLinkForm/MagicLinkForm";
 export { SongRow } from "./SongRow/SongRow";
 export { CategoryChips } from "./CategoryChips/CategoryChips";
 export { SectionHead } from "./SectionHead/SectionHead";
+export { PaginationBar } from "./PaginationBar/PaginationBar";
