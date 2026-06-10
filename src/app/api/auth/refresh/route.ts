@@ -1,13 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { cookies } from "next/headers";
 
-const SECURE = process.env.NODE_ENV === "production";
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const body = (await req.json()) as { refresh?: string };
 
-export async function POST(_req: NextRequest): Promise<NextResponse> {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("cc_refresh")?.value;
-
-  if (!refreshToken) {
+  if (!body.refresh) {
     return NextResponse.json({ error: "No refresh token" }, { status: 401 });
   }
 
@@ -17,33 +13,17 @@ export async function POST(_req: NextRequest): Promise<NextResponse> {
     const res = await fetch(`${apiUrl}/auth/token/refresh/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh: refreshToken }),
+      body: JSON.stringify({ refresh: body.refresh }),
       cache: "no-store",
     });
 
     if (!res.ok) {
-      const response = NextResponse.json({ error: "Refresh failed" }, { status: 401 });
-      response.cookies.delete("cc_access");
-      response.cookies.delete("cc_refresh");
-      return response;
+      return NextResponse.json({ error: "Refresh failed" }, { status: 401 });
     }
 
-    const body = (await res.json()) as { access: string };
-    const response = NextResponse.json({ access: body.access });
-
-    response.cookies.set("cc_access", body.access, {
-      httpOnly: true,
-      secure: SECURE,
-      sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
-
-    return response;
+    const data = (await res.json()) as { access: string };
+    return NextResponse.json({ access: data.access });
   } catch {
-    const response = NextResponse.json({ error: "Refresh failed" }, { status: 401 });
-    response.cookies.delete("cc_access");
-    response.cookies.delete("cc_refresh");
-    return response;
+    return NextResponse.json({ error: "Refresh failed" }, { status: 401 });
   }
 }

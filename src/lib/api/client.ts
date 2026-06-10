@@ -2,15 +2,28 @@ import axios, {
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from "axios";
+import { setOrRemoveLocalStorageItem, getLocalStorageItem } from "@/lib/utils/helpers";
 
-let memoryToken: string | null = null;
+const ACCESS_TOKEN_KEY = "cc_access_token";
+const REFRESH_TOKEN_KEY = "cc_refresh_token";
+let memoryToken: string | null = getLocalStorageItem(ACCESS_TOKEN_KEY);
+
 
 export function setMemoryToken(token: string | null): void {
   memoryToken = token;
+  setOrRemoveLocalStorageItem(ACCESS_TOKEN_KEY, token);
 }
 
 export function getMemoryToken(): string | null {
   return memoryToken;
+}
+
+export function setRefreshToken(token: string | null): void {
+  setOrRemoveLocalStorageItem(REFRESH_TOKEN_KEY, token);
+}
+
+export function getRefreshToken(): string | null {
+  return getLocalStorageItem(REFRESH_TOKEN_KEY);
 }
 
 let isRefreshing = false;
@@ -44,14 +57,14 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error: unknown) => {
-    if (!axios.isAxiosError(error)) return Promise.reject(error);
+  async (err: unknown) => {
+    if (!axios.isAxiosError(err)) return Promise.reject(err);
 
-    const original = error.config as InternalAxiosRequestConfig & {
+    const original = err.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
 
-    if (error.response?.status === 401 && !original._retry) {
+    if (err.response?.status === 401 && !original._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -64,8 +77,20 @@ apiClient.interceptors.response.use(
       original._retry = true;
       isRefreshing = true;
 
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) {
+        processQueue(new Error("No refresh token"), null);
+        setMemoryToken(null);
+        isRefreshing = false;
+        return Promise.reject(err);
+      }
+
       try {
-        const res = await fetch("/api/auth/refresh", { method: "POST" });
+        const res = await fetch("/api/auth/refresh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh: refreshToken }),
+        });
         if (!res.ok) throw new Error("Refresh failed");
         const body = (await res.json()) as { access: string };
         setMemoryToken(body.access);
@@ -75,13 +100,14 @@ apiClient.interceptors.response.use(
       } catch (err) {
         processQueue(err, null);
         setMemoryToken(null);
+        setRefreshToken(null);
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 

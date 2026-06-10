@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Toast, InputOTP, REGEXP_ONLY_DIGITS } from "@heroui/react";
+import { Toast, InputOTP } from "@heroui/react";
 import { AuthCard } from "@/components/organisms/AuthCard/AuthCard";
 import { useAuth } from "@/hooks/useAuth";
 import { extractApiError } from "@/lib/utils/api-error";
@@ -39,6 +39,7 @@ export default function VerifyPage() {
   }
 
   if (!email) return null;
+  const REGEXP_ALPHANUMERIC = "^[A-Z0-9]+$";
 
   return (
     <AuthCard title="Ingresa el código">
@@ -48,7 +49,7 @@ export default function VerifyPage() {
       </p>
       <InputOTP
         maxLength={6}
-        pattern={REGEXP_ONLY_DIGITS}
+        pattern={REGEXP_ALPHANUMERIC}
         value={otp}
         onChange={setOtp}
         onComplete={handleComplete}

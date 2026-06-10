@@ -8,7 +8,7 @@ import {
   logoutUser,
   fetchCurrentUser,
 } from "@/lib/api/auth";
-import { setMemoryToken } from "@/lib/auth/token";
+import { setMemoryToken, setRefreshToken } from "@/lib/auth/token";
 
 export function useAuth() {
   const { user, isAuthenticated, setUser, clearAuth } = useAuthStore();
@@ -27,15 +27,10 @@ export function useAuth() {
       throw new Error("Verificación fallida");
     }
 
-    const { access, refresh } = authResponse.data;
+    const { access_token, refresh_token } = authResponse.data;
 
-    await fetch("/api/auth/set-cookies", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access, refresh }),
-    });
-
-    setMemoryToken(access);
+    setMemoryToken(access_token);
+    setRefreshToken(refresh_token);
 
     const userResponse = await fetchCurrentUser();
     if (userResponse.success && userResponse.data) {
@@ -46,6 +41,7 @@ export function useAuth() {
   async function logout(): Promise<void> {
     await logoutUser();
     setMemoryToken(null);
+    setRefreshToken(null);
     clearAuth();
   }
 

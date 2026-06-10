@@ -1,5 +1,10 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Navbar } from "@/components/organisms/Navbar/Navbar";
+import { useAuthStore } from "@/store/authStore";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -12,6 +17,18 @@ const NAV_LINKS = [
 ];
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (hasHydrated && !isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [hasHydrated, isAuthenticated, router]);
+
+  if (!hasHydrated) return null;
+
   return (
     <>
       <Navbar />

@@ -1,29 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { cookies } from "next/headers";
 
-export async function POST(_req: NextRequest): Promise<NextResponse> {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("cc_refresh")?.value;
-  const accessToken = cookieStore.get("cc_access")?.value;
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const body = (await req.json()) as { access?: string; refresh?: string };
 
   const apiUrl = process.env.API_URL_INTERNAL ?? process.env.NEXT_PUBLIC_API_URL;
 
-  if (refreshToken && accessToken) {
+  if (body.access && body.refresh) {
     await fetch(`${apiUrl}/users/logout/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${body.access}`,
       },
-      body: JSON.stringify({ refresh: refreshToken }),
+      body: JSON.stringify({ refresh: body.refresh }),
       cache: "no-store",
-    }).catch(() => {
-      // Best-effort — clear cookies regardless
-    });
+    }).catch(() => {});
   }
 
-  const response = NextResponse.json({ ok: true });
-  response.cookies.delete("cc_access");
-  response.cookies.delete("cc_refresh");
-  return response;
+  return NextResponse.json({ ok: true });
 }

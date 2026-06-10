@@ -36,19 +36,27 @@ Three route groups share layouts:
 - `(public)/` — canciones (song list + detail), explorar
 - `(dashboard)/` — favoritos, mis-listas (requires auth)
 
-Route Handlers under `api/auth/` manage cookie lifecycle: `set-cookies`, `refresh`, `logout`.
+Route Handlers under `api/auth/`: `refresh` (proxies token refresh to Django), `logout` (best-effort backend signout).
 
 Song detail URL format: `/canciones/{id}-{slug}` — see `src/lib/utils/song-param.ts` for encode/decode.
 
 ### Auth Flow
 
-Magic-link only (no passwords). After verification:
-1. `useAuth.verifyToken` calls `/api/auth/set-cookies` → sets `cc_access` / `cc_refresh` as httpOnly cookies
-2. Access token is also written to `memoryToken` in `src/lib/api/client.ts` (module-level variable) so Axios can attach it to requests
-3. On 401, the Axios interceptor transparently calls `/api/auth/refresh`, updates `memoryToken`, and retries
-4. Middleware (`src/proxy.ts`) validates the access cookie with `jose` + `JWT_SECRET` to protect `/dashboard`, `/mis-listas`, `/favoritos`
+Magic-link and OTP only (no passwords). Backend returns JWT tokens in the response body — no cookie-setting endpoint exists. After verification:
+1. `useAuth.verifyToken` calls `verifyOtp` → backend returns `{ access_token, refresh_token }` inside `DjangoResponse.data`
+2. `access_token` is stored in `memoryToken` (module-level variable in `src/lib/api/client.ts`) **and** persisted to `localStorage` under `cc_access_token`. On page reload, the module init reads it back.
+3. `refresh_token` is stored in `localStorage` under `cc_refresh_token` via `setRefreshToken()`.
+4. Every Axios request includes `Authorization: Bearer <access_token>` via the request interceptor in `client.ts`.
+5. On 401, the interceptor reads `cc_refresh_token` from localStorage, POSTs `{ refresh }` to `/api/auth/refresh` (Next.js BFF), updates `memoryToken`, and retries the original request. If refresh also fails, both tokens are cleared.
+6. Logout: `logoutUser()` sends `{ access, refresh }` in the body to `/api/auth/logout` → best-effort call to Django `/users/logout/`.
 
-User state lives in a Zustand store (`src/store/authStore.ts`) persisted to `localStorage` under `cc-auth`.
+**No httpOnly cookies.** The `set-cookies` route handler was removed — the backend never supported it. `jose`/`JWT_SECRET` is no longer used in the middleware.
+
+**Middleware** (`src/proxy.ts`) is a pass-through — it returns `NextResponse.next()` for all matched routes. Route protection is handled client-side by `DashboardLayout`, which redirects to `/auth/login` via `useEffect` if `isAuthenticated` is false.
+
+**Security note:** Storing tokens in `localStorage` is vulnerable to XSS. This is an acceptable risk for this app given its low-sensitivity profile (Catholic songbook). If the threat model changes, migrate to httpOnly cookies with a proper backend session endpoint.
+
+User state lives in a Zustand store (`src/store/authStore.ts`) persisted to `localStorage` under `cc-auth` (includes `user` and `isAuthenticated`).
 
 ### Lyrics System (`src/lib/lyrics/`)
 
@@ -90,5 +98,5 @@ Atomic design under `src/components/`:
 | `NEXT_PUBLIC_APP_URL` | Canonical app origin |
 | `NEXT_PUBLIC_API_HOST` | Allowed hostname for `next/image` |
 | `API_URL_INTERNAL` | Server-side fetch URL (Route Handlers, Server Components) |
-| `JWT_SECRET` | Shared with Django to verify access tokens in middleware |
+| `JWT_SECRET` | No longer used by middleware (removed); may be retained for future server-side validation |
 | `SITEMAP_SERVICE_TOKEN` | Long-lived token for sitemap ISR fetches |

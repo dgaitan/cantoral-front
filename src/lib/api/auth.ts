@@ -1,5 +1,5 @@
 import type { AuthTokens, DjangoResponse, User } from "@/types";
-import { apiClient } from "./client";
+import { apiClient, getMemoryToken, getRefreshToken } from "./client";
 
 export async function loginWithPassword(
   email: string,
@@ -57,7 +57,11 @@ export async function verifyMagicLink(
 }
 
 export async function logoutUser(): Promise<void> {
-  await fetch("/api/auth/logout", { method: "POST" });
+  await fetch("/api/auth/logout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ access: getMemoryToken(), refresh: getRefreshToken() }),
+  });
 }
 
 export async function fetchCurrentUser(): Promise<DjangoResponse<User>> {
