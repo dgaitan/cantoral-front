@@ -15,7 +15,7 @@
 Error: locator.click: Error: strict mode violation: locator('a[href="/explorar"]') resolved to 4 elements:
     1) <a href="/explorar">Explorar</a> aka getByRole('link', { name: 'Explorar' }).first()
     2) <a href="/explorar" class="no-underline block">…</a> aka getByRole('link', { name: 'Buscar canciones' })
-    3) <a href="/explorar">…</a> aka getByRole('link', { name: 'Ver todo' })
+    3) <a href="/explorar" class="inline-block bg-orange text-white font-semibold rounded-[13px] px-5 py-3 no-underline">Ver canciones</a> aka getByRole('link', { name: 'Ver canciones' })
     4) <a href="/explorar" class="flex flex-col items-center gap-1 px-[14px] py-[2px] no-underline text-muted">…</a> aka getByLabel('Navegación principal').getByRole('link', { name: 'Explorar' })
 
 Call log:
@@ -54,94 +54,28 @@ Call log:
             - img [ref=e19]
             - searchbox "Buscar canciones" [ref=e22]
     - generic [ref=e23]:
-      - paragraph [ref=e24]: Momentos de la Misa
-      - generic [ref=e25]:
-        - link "Entrada" [ref=e26] [cursor=pointer]:
-          - /url: /explorar?tag_id=10
-          - generic [ref=e27]: Entrada
-          - img [ref=e28]
-        - link "Comunión" [ref=e30] [cursor=pointer]:
-          - /url: /explorar?tag_id=20
-          - generic [ref=e31]: Comunión
-          - img [ref=e32]
-        - link "Ofertorio" [ref=e34] [cursor=pointer]:
-          - /url: /explorar?tag_id=30
-          - generic [ref=e35]: Ofertorio
-          - img [ref=e36]
-    - generic [ref=e39]:
-      - generic [ref=e41]:
-        - generic [ref=e42]:
-          - generic [ref=e43]: Para tu liturgia
-          - heading "Más buscadas" [level=2] [ref=e44]
-        - link "Ver todo" [ref=e45] [cursor=pointer]:
-          - /url: /explorar
-          - text: Ver todo
-          - img [ref=e46]
-      - generic [ref=e48]:
-        - link "Pescador de Hombres Anónimo" [ref=e49] [cursor=pointer]:
-          - /url: /canciones/101-pescador-de-hombres
-          - generic [ref=e50]:
-            - img [ref=e51]
-            - generic [ref=e54]: P
-          - generic [ref=e55]:
-            - generic [ref=e56]: Pescador de Hombres
-            - generic [ref=e57]: Anónimo
-        - link "Ave María Anónimo" [ref=e58] [cursor=pointer]:
-          - /url: /canciones/102-ave-maría
-          - generic [ref=e59]:
-            - img [ref=e60]
-            - generic [ref=e63]: A
-          - generic [ref=e64]:
-            - generic [ref=e65]: Ave María
-            - generic [ref=e66]: Anónimo
-    - generic [ref=e67]:
-      - generic [ref=e69]:
-        - generic [ref=e70]: Catálogo
-        - heading "Recién agregadas" [level=2] [ref=e71]
-      - link "1 Pescador de Hombres Anónimo G" [ref=e72] [cursor=pointer]:
-        - /url: /canciones/101-pescador-de-hombres
-        - generic [ref=e73]: "1"
-        - generic [ref=e74]:
-          - img [ref=e75]
-          - generic [ref=e78]: P
-        - generic [ref=e79]:
-          - generic [ref=e80]: Pescador de Hombres
-          - generic [ref=e81]: Anónimo
-        - generic [ref=e82]:
-          - img [ref=e83]
-          - text: G
-      - link "2 Ave María Anónimo G" [ref=e86] [cursor=pointer]:
-        - /url: /canciones/102-ave-maría
-        - generic [ref=e87]: "2"
-        - generic [ref=e88]:
-          - img [ref=e89]
-          - generic [ref=e92]: A
-        - generic [ref=e93]:
-          - generic [ref=e94]: Ave María
-          - generic [ref=e95]: Anónimo
-        - generic [ref=e96]:
-          - img [ref=e97]
-          - text: G
-  - navigation "Navegación principal" [ref=e101]:
-    - link "Inicio" [ref=e102] [cursor=pointer]:
+      - paragraph [ref=e24]: Explora el catálogo de canciones
+      - link "Ver canciones" [ref=e25] [cursor=pointer]:
+        - /url: /explorar
+  - navigation "Navegación principal" [ref=e27]:
+    - link "Inicio" [ref=e28] [cursor=pointer]:
       - /url: /
-      - img [ref=e103]
-      - generic [ref=e106]: Inicio
-    - link "Explorar" [ref=e107] [cursor=pointer]:
+      - img [ref=e29]
+      - generic [ref=e32]: Inicio
+    - link "Explorar" [ref=e33] [cursor=pointer]:
       - /url: /explorar
-      - img [ref=e108]
-      - generic [ref=e111]: Explorar
-    - link "Listas" [ref=e112] [cursor=pointer]:
+      - img [ref=e34]
+      - generic [ref=e37]: Explorar
+    - link "Listas" [ref=e38] [cursor=pointer]:
       - /url: /listas
-      - img [ref=e113]
-      - generic [ref=e115]: Listas
-    - link "Cuenta" [ref=e116] [cursor=pointer]:
+      - img [ref=e39]
+      - generic [ref=e41]: Listas
+    - link "Cuenta" [ref=e42] [cursor=pointer]:
       - /url: /login
-      - img [ref=e117]
-      - generic [ref=e120]: Cuenta
-  - button "Open Next.js Dev Tools" [ref=e126] [cursor=pointer]:
-    - img [ref=e127]
-  - alert [ref=e130]
+      - img [ref=e43]
+      - generic [ref=e46]: Cuenta
+  - button "Open Next.js Dev Tools" [ref=e52] [cursor=pointer]:
+    - img [ref=e53]
 ```
 
 # Test source

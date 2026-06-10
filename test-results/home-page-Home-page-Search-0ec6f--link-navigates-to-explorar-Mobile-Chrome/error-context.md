@@ -66,7 +66,6 @@ Call log:
       - generic [ref=e41]: Cuenta
   - button "Open Next.js Dev Tools" [ref=e47] [cursor=pointer]:
     - img [ref=e48]
-  - alert [ref=e51]
 ```
 
 # Test source

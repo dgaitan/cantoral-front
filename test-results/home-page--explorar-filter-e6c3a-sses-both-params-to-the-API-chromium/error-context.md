@@ -88,7 +88,7 @@ Received: undefined
       - generic [ref=e75]: Cuenta
   - button "Open Next.js Dev Tools" [ref=e81] [cursor=pointer]:
     - img [ref=e82]
-  - alert [ref=e85]: Cancionero Católico
+  - alert [ref=e85]
 ```
 
 # Test source
