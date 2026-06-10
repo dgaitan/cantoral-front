@@ -23,7 +23,7 @@ export interface SongListItem {
   created_at: string | null;
   updated_at: string | null;
   authors: Author[];
-  categories: Category[];
+  tags: Category[];
 }
 
 export interface Song extends SongListItem {

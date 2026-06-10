@@ -16,7 +16,7 @@ export function LiturgyMoments({ categories }: LiturgyMomentsProps) {
         {categories.slice(0, 6).map((cat) => (
           <Link
             key={cat.id}
-            href={`/explorar?cat=${cat.slug}`}
+            href={`/explorar?tag_id=${cat.id}`}
             className="w-full flex items-baseline justify-between py-[14px] border-t border-line no-underline"
           >
             <span className="font-serif text-[21px] font-medium text-ink">

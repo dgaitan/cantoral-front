@@ -3,34 +3,37 @@ import { apiClient } from "./client";
 
 export interface SongsQuery {
   page?: number;
-  limit?: number;
   search?: string;
-  category?: string;
+  tag_id?: number;
+  author_id?: number;
 }
 
 export async function fetchSongs(
   query: SongsQuery = {}
 ): Promise<PaginatedResponse<SongListItem>> {
   const { data } = await apiClient.get<PaginatedResponse<SongListItem>>(
-    "/songs/",
+    "/v1/songs/",
     { params: query }
   );
   return data;
 }
 
 export async function fetchSong(id: string): Promise<DjangoResponse<Song>> {
-  const { data } = await apiClient.get<DjangoResponse<Song>>(`/songs/${id}/`);
+  const { data } = await apiClient.get<DjangoResponse<Song>>(`/v1/songs/${id}/`);
   return data;
 }
 
 export async function fetchCategories(): Promise<Category[]> {
   try {
-    const { data } = await apiClient.get<{ data?: { results?: Category[] } | Category[] }>(
-      "/categories/"
-    );
-    const payload = data.data;
-    if (Array.isArray(payload)) return payload;
-    return (payload as { results?: Category[] })?.results ?? [];
+    const { data } = await apiClient.get<{
+      success: boolean;
+      data: { results: Array<{ id: number; name: string; slug: string; parent_id: number | null }> };
+    }>("/v1/tags/");
+    return (data.data?.results ?? []).map((tag) => ({
+      id: String(tag.id),
+      name: tag.name,
+      slug: tag.slug,
+    }));
   } catch {
     return [];
   }

@@ -26,7 +26,7 @@ export function CoverArt({
     .replace(LEADING_ARTICLE, "")
     .charAt(0)
     .toUpperCase();
-  const categoryName = song.categories[0]?.name ?? "";
+  const categoryName = song.tags?.[0]?.name ?? "";
 
   return (
     <div

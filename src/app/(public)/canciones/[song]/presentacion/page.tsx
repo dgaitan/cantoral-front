@@ -49,7 +49,7 @@ export default function PresentacionPage({ params }: Props) {
     : "/explorar";
 
   const displayKey = song?.tone ? transposeChord(song.tone, steps) : null;
-  const categoryName = song?.categories[0]?.name;
+  const categoryName = song?.tags?.[0]?.name;
 
   if (isLoading) {
     return (

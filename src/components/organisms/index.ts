@@ -1,4 +1,5 @@
 export { HomeHero } from "./HomeHero/HomeHero";
+export { HomeSections } from "./HomeSections/HomeSections";
 export { SongList } from "./SongList/SongList";
 export { LyricsRenderer } from "./LyricsRenderer/LyricsRenderer";
 export { RevealPresentation } from "./RevealPresentation/RevealPresentation";

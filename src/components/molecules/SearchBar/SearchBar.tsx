@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -23,10 +23,16 @@ export function SearchBar({
 }: SearchBarProps) {
   const [value, setValue] = useState(defaultValue);
   const debounced = useDebounce(value, 300);
+  const isMounted = useRef(false);
 
+  // Skip the initial mount call — only fire onSearch when the user actually types
   useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
     onSearch?.(debounced);
-  }, [debounced, onSearch]);
+  }, [debounced]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div

@@ -25,10 +25,7 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
   const [showChords, setShowChords] = useState(true);
   const [fontSize, setFontSize] = useState(18);
 
-  const categorySlug = song.categories[0]?.slug;
-  const { data: similarData } = useSongs(
-    categorySlug ? { category: categorySlug, limit: 6 } : {}
-  );
+  const { data: similarData } = useSongs();
   const similarSongs = (similarData?.data?.results ?? []).filter(
     (s) => s.id !== song.id
   ).slice(0, 5);
@@ -36,7 +33,7 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
   const rawLyrics = song.lyrics_with_chords ?? song.lyrics ?? "";
   const baseKey = song.tone ?? "";
   const displayKey = baseKey ? transposeChord(baseKey, steps) : "";
-  const categoryName = song.categories[0]?.name;
+  const categoryName = song.tags?.[0]?.name;
   const authorName = song.authors.map((a) => a.name).join(", ");
 
   return (

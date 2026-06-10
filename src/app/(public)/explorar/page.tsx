@@ -14,14 +14,17 @@ function ExplorarContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
-  const [activeCategory, setActiveCategory] = useState<string>(
-    searchParams.get("cat") ?? "all"
+  const [activeTagId, setActiveTagId] = useState<string>(
+    searchParams.get("tag_id") ?? "all"
   );
   const debouncedSearch = useDebounce(search, 300);
 
+  const authorIdParam = searchParams.get("author_id");
+
   const { data: songsData, isLoading } = useSongs({
     search: debouncedSearch || undefined,
-    category: activeCategory !== "all" ? activeCategory : undefined,
+    tag_id: activeTagId !== "all" ? Number(activeTagId) : undefined,
+    author_id: authorIdParam ? Number(authorIdParam) : undefined,
   });
 
   const { data: categories = [] } = useCategories();
@@ -36,9 +39,9 @@ function ExplorarContent() {
   }
 
   function handleCategory(id: string) {
-    setActiveCategory(id);
+    setActiveTagId(id);
     const params = new URLSearchParams(searchParams.toString());
-    if (id !== "all") params.set("cat", id); else params.delete("cat");
+    if (id !== "all") params.set("tag_id", id); else params.delete("tag_id");
     router.replace(`/explorar?${params.toString()}`, { scroll: false });
   }
 
@@ -76,7 +79,7 @@ function ExplorarContent() {
         <div style={{ marginTop: 12, marginBottom: 0 }}>
           <CategoryChips
             categories={categories}
-            activeId={activeCategory}
+            activeId={activeTagId}
             onChange={handleCategory}
           />
         </div>

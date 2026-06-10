@@ -16,7 +16,7 @@ const mockSong: SongListItem = {
   created_at: null,
   updated_at: null,
   authors: [{ id: "1", name: "John Newton", slug: "john-newton" }],
-  categories: [{ id: "entrada", name: "Entrada", slug: "entrada" }],
+  tags: [{ id: "entrada", name: "Entrada", slug: "entrada" }],
 };
 
 describe("SongCard", () => {
