@@ -16,7 +16,7 @@ interface Props {
 async function getSong(id: string): Promise<Song | null> {
   const apiUrl = process.env.API_URL_INTERNAL ?? process.env.NEXT_PUBLIC_API_URL;
   try {
-    const res = await fetch(`${apiUrl}/songs/${id}/`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${apiUrl}/v1/songs/${id}/`, { next: { revalidate: 3600, tags: [`song-${id}`] } });
     if (!res.ok) return null;
     const body: DjangoResponse<Song> = await res.json();
     return body.success ? (body.data as Song) : null;
@@ -32,11 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!song) return { title: "Canción no encontrada" };
 
+  const plainLyrics = stripFrontmatter(song.plain_lyrics ?? song.lyrics_with_chords);
   const description =
     song.meta_description ??
-    (song.lyrics_with_chords
-      ? lyricsToPlainText(song.lyrics_with_chords).slice(0, 160)
-      : "");
+    (plainLyrics ? lyricsToPlainText(plainLyrics).slice(0, 160) : "");
 
   return {
     title: song.meta_title ?? song.name,
@@ -52,6 +51,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/** Strip YAML frontmatter (---...---) that the backend prepends to plain_lyrics. */
+function stripFrontmatter(raw: string | null | undefined): string | null {
+  if (!raw || typeof raw !== "string") return null;
+  return raw.replace(/^---[\s\S]*?---\s*\n*/m, "").trim() || null;
+}
+
 export default async function SongPage({ params }: Props) {
   const { song: param } = await params;
   const { id } = parseSongParam(param);
@@ -62,6 +67,8 @@ export default async function SongPage({ params }: Props) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const jsonLd = buildSongJsonLd(song, appUrl);
   const presentacionHref = `/canciones/${buildSongParam(song.id, song.slug)}/presentacion`;
+  // Prefer plain_lyrics (v1 API field); fall back to legacy lyrics_with_chords.
+  const lyricsRaw = stripFrontmatter(song.plain_lyrics ?? song.lyrics_with_chords);
 
   return (
     <>
@@ -91,10 +98,8 @@ export default async function SongPage({ params }: Props) {
           </Link>
         </div>
 
-        {song.lyrics_with_chords ? (
-          <LyricsRenderer raw={song.lyrics_with_chords} />
-        ) : song.lyrics ? (
-          <LyricsRenderer raw={song.lyrics} showChords={false} />
+        {lyricsRaw ? (
+          <LyricsRenderer raw={lyricsRaw} showChords={false} />
         ) : (
           <p className="text-foreground/50">Esta canción no tiene letra disponible.</p>
         )}

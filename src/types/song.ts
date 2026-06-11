@@ -27,6 +27,7 @@ export interface SongListItem {
 }
 
 export interface Song extends SongListItem {
+  plain_lyrics: string | null;
   lyrics: string | null;
   lyrics_with_chords: string | null;
   lyric: unknown | null;
