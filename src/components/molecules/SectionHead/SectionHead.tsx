@@ -8,65 +8,23 @@ interface SectionHeadProps {
   actionHref?: string;
 }
 
-export function SectionHead({
-  title,
-  kicker,
-  action,
-  actionHref,
-}: SectionHeadProps) {
+export function SectionHead({ title, kicker, action, actionHref }: SectionHeadProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
-        marginBottom: 14,
-      }}
-    >
+    <div className="flex items-end justify-between mb-[14px]">
       <div>
         {kicker && (
-          <div
-            style={{
-              fontFamily: "var(--font-hanken)",
-              fontSize: 11.5,
-              fontWeight: 700,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              color: "var(--orange)",
-              marginBottom: 5,
-              whiteSpace: "nowrap",
-            }}
-          >
+          <div className="font-[family-name:var(--font-hanken)] text-[11.5px] font-bold tracking-[0.16em] uppercase text-[var(--orange)] mb-[5px] whitespace-nowrap">
             {kicker}
           </div>
         )}
-        <h2
-          style={{
-            fontFamily: "var(--font-newsreader)",
-            fontSize: 22,
-            fontWeight: 600,
-            color: "var(--ink)",
-            margin: 0,
-            letterSpacing: "-0.01em",
-            whiteSpace: "nowrap",
-          }}
-        >
+        <h2 className="font-[family-name:var(--font-newsreader)] text-[22px] font-semibold text-[var(--ink)] m-0 tracking-[-0.01em] whitespace-nowrap">
           {title}
         </h2>
       </div>
       {action && actionHref && (
         <Link
           href={actionHref}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 3,
-            fontFamily: "var(--font-hanken)",
-            fontSize: 13.5,
-            fontWeight: 600,
-            color: "var(--muted)",
-            textDecoration: "none",
-          }}
+          className="flex items-center gap-[3px] font-[family-name:var(--font-hanken)] text-[13.5px] font-semibold text-[var(--muted)] no-underline"
         >
           {action}
           <ChevronRight size={15} aria-hidden="true" />

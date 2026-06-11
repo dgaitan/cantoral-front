@@ -3,12 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Heart, Share2, ArrowLeft, Eye, Heart as HeartFill, Play } from "lucide-react";
+import { Button } from "@heroui/react";
+import { Heart, Share2, ArrowLeft, Eye, Heart as HeartFill, Play, KeyRound } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 import { useSongs } from "@/hooks/useSongs";
 import { CoverArt } from "@/components/atoms/CoverArt/CoverArt";
-import { KeyBadge } from "@/components/atoms/KeyBadge/KeyBadge";
+import { IconButton } from "@/components/atoms/IconButton/IconButton";
+import { SectionHead } from "@/components/molecules/SectionHead/SectionHead";
 import { ChordControls } from "@/components/organisms/ChordControls/ChordControls";
 import { LyricsRenderer } from "@/components/organisms/LyricsRenderer/LyricsRenderer";
+import { StructuredLyricsRenderer } from "@/components/organisms/StructuredLyricsRenderer/StructuredLyricsRenderer";
 import { SongRow } from "@/components/molecules/SongRow/SongRow";
 import { transposeChord } from "@/lib/lyrics/transpose";
 import { buildSongParam } from "@/lib/utils/song-param";
@@ -19,6 +23,31 @@ interface Props {
   presentacionHref: string;
 }
 
+interface MetaStatProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}
+
+function MetaStat({ icon, label, value }: MetaStatProps) {
+  return (
+    <div className="flex flex-col gap-[3px]">
+      <span className="flex items-center gap-[5px] font-[family-name:var(--font-hanken)] text-[11px] font-semibold tracking-[0.10em] uppercase text-[var(--muted)]">
+        {icon}
+        {label}
+      </span>
+      <span className="font-[family-name:var(--font-newsreader)] text-[18px] font-semibold text-[var(--ink)]">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function stripFrontmatter(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  return raw.replace(/^---[\s\S]*?---\s*\n*/m, "").trim() || null;
+}
+
 export function SongDetailClient({ song, presentacionHref }: Props) {
   const router = useRouter();
   const [steps, setSteps] = useState(0);
@@ -26,234 +55,108 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
   const [fontSize, setFontSize] = useState(18);
 
   const { data: similarData } = useSongs();
-  const similarSongs = (similarData?.data?.results ?? []).filter(
-    (s) => s.id !== song.id
-  ).slice(0, 5);
+  const similarSongs = (similarData?.data?.results ?? [])
+    .filter((s) => s.id !== song.id)
+    .slice(0, 5);
 
-  const rawLyrics = song.lyrics_with_chords ?? song.lyrics ?? "";
+  const hasStructured = !!song.lyric;
+  const rawLyricsFallback = stripFrontmatter(song.plain_lyrics ?? song.lyrics_with_chords);
+  const hasLyrics = hasStructured || !!rawLyricsFallback;
+
   const baseKey = song.tone ?? "";
   const displayKey = baseKey ? transposeChord(baseKey, steps) : "";
   const categoryName = song.tags?.[0]?.name;
   const authorName = song.authors.map((a) => a.name).join(", ");
 
+  const viewsValue =
+    song.views == null
+      ? null
+      : song.views >= 1000
+        ? `${(song.views / 1000).toFixed(1)}k`
+        : song.views.toLocaleString("es");
+
   return (
-    <div style={{ background: "var(--paper)", minHeight: "100vh" }}>
+    <div className="bg-[var(--paper)] min-h-screen">
+
       {/* Top action bar */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "14px 16px",
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          background: "rgba(250,247,241,0.9)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          borderBottom: "1px solid var(--line)",
-        }}
-      >
-        <button
-          onClick={() => router.back()}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            border: "1px solid var(--line)",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "var(--ink)",
-            cursor: "pointer",
-          }}
-          aria-label="Volver"
-        >
+      <div className="flex items-center justify-between px-4 py-[14px] sticky top-0 z-20 bg-[rgba(250,247,241,0.9)] backdrop-blur-[10px] border-b border-[var(--line)]">
+        <IconButton onPress={() => router.back()} aria-label="Volver">
           <ArrowLeft size={18} />
-        </button>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              border: "1px solid var(--line)",
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--ink)",
-              cursor: "pointer",
-            }}
-            aria-label="Guardar"
-          >
+        </IconButton>
+        <div className="flex gap-2">
+          <IconButton aria-label="Guardar">
             <Heart size={18} />
-          </button>
-          <button
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              border: "1px solid var(--line)",
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--ink)",
-              cursor: "pointer",
-            }}
-            aria-label="Compartir"
-          >
+          </IconButton>
+          <IconButton aria-label="Compartir">
             <Share2 size={18} />
-          </button>
+          </IconButton>
         </div>
       </div>
 
-      <div style={{ padding: "20px 20px 0" }}>
-        {/* Header: cover + meta */}
-        <div style={{ display: "flex", gap: 16, marginBottom: 18 }}>
-          <div style={{ flexShrink: 0 }}>
+      <div className="px-5 pt-5">
+
+        {/* Song header: cover art + title block */}
+        <div className="flex gap-4 mb-[18px]">
+          <div data-testid="cover-art" className="shrink-0">
             <CoverArt song={song} size={92} radius={18} />
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="flex-1 min-w-0">
             {categoryName && (
               <div
-                style={{
-                  fontFamily: "var(--font-hanken)",
-                  fontSize: 11.5,
-                  fontWeight: 700,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "var(--orange)",
-                  marginBottom: 4,
-                }}
+                data-testid="song-category"
+                className="font-[family-name:var(--font-hanken)] text-[11.5px] font-bold tracking-[0.14em] uppercase text-[var(--orange)] mb-1"
               >
                 {categoryName}
               </div>
             )}
-            <h1
-              style={{
-                fontFamily: "var(--font-newsreader)",
-                fontSize: 24,
-                fontWeight: 600,
-                color: "var(--ink)",
-                lineHeight: 1.15,
-                margin: "0 0 6px",
-              }}
-            >
+            <h1 className="font-[family-name:var(--font-newsreader)] text-2xl font-semibold text-[var(--ink)] leading-[1.15] mt-0 mb-[6px]">
               {song.name}
             </h1>
             {authorName && (
-              <p
-                style={{
-                  fontFamily: "var(--font-hanken)",
-                  fontSize: 13,
-                  color: "var(--muted)",
-                  margin: 0,
-                }}
-              >
+              <p data-testid="song-author" className="font-[family-name:var(--font-hanken)] text-[13px] text-[var(--muted)] m-0">
                 {authorName}
               </p>
             )}
           </div>
         </div>
 
-        {/* Meta row: key + views + likes */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            marginBottom: 16,
-          }}
-        >
-          {displayKey && <KeyBadge tone={displayKey} />}
-          {song.views != null && (
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontFamily: "var(--font-hanken)",
-                fontSize: 12,
-                color: "var(--muted)",
-              }}
-            >
-              <Eye size={13} />
-              {song.views.toLocaleString("es")}
-            </span>
-          )}
+        {/* Meta stats: tono · vistas · me gusta */}
+        <div className="flex gap-[18px] pb-4">
+          {displayKey && <MetaStat icon={<KeyRound size={15} />} label="Tono" value={displayKey} />}
+          {viewsValue && <MetaStat icon={<Eye size={15} />} label="Vistas" value={viewsValue} />}
           {song.likes != null && (
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontFamily: "var(--font-hanken)",
-                fontSize: 12,
-                color: "var(--muted)",
-              }}
-            >
-              <HeartFill size={13} />
-              {song.likes.toLocaleString("es")}
-            </span>
+            <MetaStat icon={<HeartFill size={15} />} label="Me gusta" value={song.likes.toLocaleString("es")} />
           )}
         </div>
 
-        {/* Action row */}
-        <div
-          style={{ display: "flex", gap: 10, marginBottom: 20 }}
-        >
+        {/* Primary actions */}
+        <div className="flex gap-[10px] mb-5">
           <Link
             href={presentacionHref}
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 6,
-              height: 48,
-              borderRadius: 14,
-              background: "var(--ink)",
-              color: "var(--cream)",
-              fontFamily: "var(--font-hanken)",
-              fontWeight: 600,
-              fontSize: 14,
-              textDecoration: "none",
-            }}
+            className={cn(
+              "flex-1 flex items-center justify-center h-12 rounded-[14px] no-underline",
+              "bg-[var(--ink)] text-[var(--cream)]",
+              "font-[family-name:var(--font-hanken)] text-sm font-semibold"
+            )}
           >
             Proyectar
           </Link>
-          <button
-            style={{
-              flex: 1,
-              height: 48,
-              borderRadius: 14,
-              border: "1.5px solid var(--ink)",
-              background: "transparent",
-              color: "var(--ink)",
-              fontFamily: "var(--font-hanken)",
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: "pointer",
-            }}
+          <Button
+            data-testid="action-guardar"
+            variant="outline"
+            className={cn(
+              "flex-1 h-12 rounded-[14px]",
+              "border-[1.5px] border-[var(--ink)] text-[var(--ink)]",
+              "font-[family-name:var(--font-hanken)] text-sm font-semibold"
+            )}
           >
             Guardar
-          </button>
+          </Button>
         </div>
 
-        {/* ChordControls */}
-        {rawLyrics && (
-          <div
-            style={{
-              background: "#fff",
-              border: "1px solid var(--line)",
-              borderRadius: 18,
-              padding: "16px 16px",
-              marginBottom: 24,
-            }}
-          >
+        {/* Chord controls */}
+        {hasLyrics && (
+          <div data-testid="chord-controls" className="bg-white border border-[var(--line)] rounded-[18px] p-4 mb-6">
             <ChordControls
               steps={steps}
               onStepsChange={setSteps}
@@ -267,64 +170,33 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
         )}
 
         {/* Lyrics */}
-        {rawLyrics ? (
-          <div style={{ marginBottom: 32 }}>
-            <LyricsRenderer
-              raw={rawLyrics}
+        <div className="mb-8">
+          {hasStructured ? (
+            <StructuredLyricsRenderer
+              blocks={showChords ? song.lyric!.chords : song.lyric!.lyric}
+              showChords={showChords}
               steps={steps}
+              fontSize={fontSize}
+            />
+          ) : rawLyricsFallback ? (
+            <LyricsRenderer
+              lyrics={song.lyrics}
               showChords={showChords}
               fontSize={fontSize}
             />
-          </div>
-        ) : (
-          <p
-            style={{
-              fontFamily: "var(--font-hanken)",
-              color: "var(--muted)",
-              marginBottom: 32,
-            }}
-          >
-            Esta canción no tiene letra disponible.
-          </p>
-        )}
+          ) : (
+            <p className="text-[var(--muted)] font-[family-name:var(--font-hanken)]">
+              Esta canción no tiene letra disponible.
+            </p>
+          )}
+        </div>
 
-        {/* YouTube placeholder */}
+        {/* Video */}
         {song.youtube_url && (
-          <div style={{ marginBottom: 32 }}>
-            <div
-              style={{
-                fontFamily: "var(--font-hanken)",
-                fontSize: 11.5,
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "var(--muted)",
-                marginBottom: 10,
-              }}
-            >
-              Video
-            </div>
-            <div
-              style={{
-                background: "var(--ink)",
-                borderRadius: 16,
-                aspectRatio: "16/9",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: "50%",
-                  background: "var(--orange)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+          <div data-testid="video-section" className="mb-8">
+            <SectionHead kicker="Video" title="Escuchar" />
+            <div className="bg-[var(--ink)] rounded-2xl aspect-video flex items-center justify-center">
+              <div className="w-14 h-14 rounded-full bg-[var(--orange)] flex items-center justify-center">
                 <Play size={24} fill="white" color="white" />
               </div>
             </div>
@@ -333,32 +205,20 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
 
         {/* Similar songs */}
         {similarSongs.length > 0 && (
-          <div style={{ marginBottom: 32 }}>
-            <div
-              style={{
-                fontFamily: "var(--font-hanken)",
-                fontSize: 11.5,
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "var(--muted)",
-                marginBottom: 4,
-              }}
-            >
-              {categoryName ? `Más de ${categoryName}` : "Canciones similares"}
-            </div>
+          <div data-testid="similar-songs" className="mb-8">
+            <SectionHead
+              kicker="También te puede gustar"
+              title={categoryName ? `Más de ${categoryName}` : "Canciones similares"}
+            />
             {similarSongs.map((s) => (
-              <SongRow
-                key={s.id}
-                song={s}
-                href={`/canciones/${buildSongParam(s.id, s.slug)}`}
-              />
+              <SongRow key={s.id} song={s} href={`/canciones/${buildSongParam(s.id, s.slug)}`} />
             ))}
           </div>
         )}
+
       </div>
 
-      <div style={{ height: 90 }} />
+      <div className="h-[90px]" />
     </div>
   );
 }

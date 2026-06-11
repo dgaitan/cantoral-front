@@ -1,16 +1,14 @@
 "use client";
 
+import { cn } from "@/lib/utils/cn";
 import { parseLyricsIntoBlocks } from "@/lib/lyrics/parser";
 import { transposeChord } from "@/lib/lyrics/transpose";
 import type { LyricsToken } from "@/lib/lyrics/parser";
 
 interface LyricsRendererProps {
-  raw: string;
-  steps?: number;
-  showChords?: boolean;
-  fontSize?: number;
-  dark?: boolean;
-  className?: string;
+  lyrics: LyricsItems;
+  showChords: boolean;
+  fontSize: number;
 }
 
 type WordSegment = { chord: string | null; text: string };
@@ -127,32 +125,29 @@ function LyricsLineView({
   );
 }
 
+interface LyricsItem {
+  type: "verse" | "chorus";
+  content: string;
+}
+
+interface LyricsItems {
+  lyric: LyricsItem[];
+  chords: LyricsItem[];
+}
+
 export function LyricsRenderer({
-  raw,
-  steps = 0,
+  lyrics = { lyric: [], chords: [] },
   showChords = true,
   fontSize = 18,
-  dark = false,
-  className,
 }: LyricsRendererProps) {
-  const blocks = parseLyricsIntoBlocks(raw);
-  const labelColor = dark ? "rgba(243,234,214,0.5)" : "var(--muted)";
-
   return (
     <div
-      style={{ display: "flex", flexDirection: "column", gap: 18 }}
-      className={className}
+      className="flex flex-col gap-8"
       data-testid="lyrics-renderer"
     >
-      {blocks.map((block, bi) => (
+      {lyrics.lyric.map((item: LyricsItem, i: number) => (
         <div
-          key={bi}
-          style={{
-            paddingLeft: block.isChorus ? 14 : 0,
-            borderLeft: block.isChorus
-              ? `3px solid ${dark ? "rgba(222,196,46,0.6)" : "var(--gold)"}`
-              : "none",
-          }}
+          key={i}
         >
           <div
             style={{
@@ -161,29 +156,21 @@ export function LyricsRenderer({
               fontWeight: 700,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: labelColor,
+              color: "var(--muted)",
               marginBottom: 7,
             }}
           >
-            {block.label}
+            {item.type === 'verse' ? 'Estribillo' : 'Coro'}
           </div>
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: fontSize * 0.42,
+              fontSize: fontSize,
+              gap: fontSize * 0.4,
             }}
+            dangerouslySetInnerHTML={{ __html: item.content }}
           >
-            {block.lines.map((line, li) => (
-              <LyricsLineView
-                key={li}
-                tokens={line}
-                steps={steps}
-                showChords={showChords}
-                fontSize={fontSize}
-                dark={dark}
-              />
-            ))}
           </div>
         </div>
       ))}

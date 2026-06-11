@@ -77,6 +77,7 @@ export function ChordControls({
           </button>
           <div style={{ textAlign: "center" }}>
             <span
+              data-testid="current-key"
               style={{
                 fontFamily: "var(--font-jetbrains)",
                 fontSize: 18,

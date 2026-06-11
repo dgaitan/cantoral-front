@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { LyricsRenderer } from "@/components/organisms/LyricsRenderer/LyricsRenderer";
+import { SongDetailClient } from "@/components/organisms/SongDetail/SongDetailClient";
 import { parseSongParam, buildSongParam } from "@/lib/utils/song-param";
 import { lyricsToPlainText } from "@/lib/lyrics/parser";
 import { buildSongJsonLd } from "@/lib/utils/seo";
@@ -67,8 +66,6 @@ export default async function SongPage({ params }: Props) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const jsonLd = buildSongJsonLd(song, appUrl);
   const presentacionHref = `/canciones/${buildSongParam(song.id, song.slug)}/presentacion`;
-  // Prefer plain_lyrics (v1 API field); fall back to legacy lyrics_with_chords.
-  const lyricsRaw = stripFrontmatter(song.plain_lyrics ?? song.lyrics_with_chords);
 
   return (
     <>
@@ -76,34 +73,7 @@ export default async function SongPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
-      <div className="max-w-3xl">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">{song.name}</h1>
-            {song.tone && (
-              <p className="text-sm text-foreground/50 mt-1">Tono: {song.tone}</p>
-            )}
-            {song.authors.length > 0 && (
-              <p className="text-sm text-foreground/50">
-                {song.authors.map((a) => a.name).join(", ")}
-              </p>
-            )}
-          </div>
-          <Link
-            href={presentacionHref}
-            className="shrink-0 rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
-          >
-            Presentar
-          </Link>
-        </div>
-
-        {lyricsRaw ? (
-          <LyricsRenderer raw={lyricsRaw} showChords={false} />
-        ) : (
-          <p className="text-foreground/50">Esta canción no tiene letra disponible.</p>
-        )}
-      </div>
+      <SongDetailClient song={song} presentacionHref={presentacionHref} />
     </>
   );
 }

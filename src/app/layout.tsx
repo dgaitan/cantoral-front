@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Newsreader, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import { Toast } from "@heroui/react";
 import { BottomNav } from "@/components/organisms/BottomNav/BottomNav";
 import "./globals.css";
@@ -43,15 +42,12 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      suppressHydrationWarning
-      className={`${newsreader.variable} ${hanken.variable} ${jetbrains.variable} h-full antialiased`}
+      className={`light ${newsreader.variable} ${hanken.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider attribute="class" defaultTheme="light">
-          <Toast.Provider placement="top" />
-          {children}
-          <BottomNav />
-        </ThemeProvider>
+        <Toast.Provider placement="top" />
+        {children}
+        <BottomNav />
       </body>
     </html>
   );
