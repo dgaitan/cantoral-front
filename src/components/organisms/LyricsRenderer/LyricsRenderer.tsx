@@ -145,7 +145,7 @@ export function LyricsRenderer({
       className="flex flex-col gap-8"
       data-testid="lyrics-renderer"
     >
-      {lyrics.lyric.map((item: LyricsItem, i: number) => (
+      {!showChords && lyrics.lyric.map((item: LyricsItem, i: number) => (
         <div
           key={i}
         >
@@ -173,6 +173,37 @@ export function LyricsRenderer({
           >
           </div>
         </div>
+      ))}
+
+      {showChords && lyrics.chords.map((item: LyricsItem, i: number) => (
+        <div
+        key={i}
+      >
+        <div
+          style={{
+            fontFamily: "var(--font-hanken)",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+            marginBottom: 7,
+          }}
+        >
+          {item.type === 'verse' ? 'Estribillo' : 'Coro'}
+        </div>
+        <pre
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: fontSize - 4,
+            gap: (fontSize - 4) * 0.4,
+            fontFamily: "monospace",
+          }}
+          dangerouslySetInnerHTML={{ __html: item.content }}
+        >
+        </pre>
+      </div>
       ))}
     </div>
   );
