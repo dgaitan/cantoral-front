@@ -1,129 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import { parseLyricsIntoBlocks } from "@/lib/lyrics/parser";
-import { transposeChord } from "@/lib/lyrics/transpose";
-import type { LyricsToken } from "@/lib/lyrics/parser";
-
-interface LyricsRendererProps {
-  lyrics: LyricsItems;
-  showChords: boolean;
-  fontSize: number;
-}
-
-type WordSegment = { chord: string | null; text: string };
-type WordGroup = WordSegment[] | " ";
-
-function buildWordGroups(tokens: LyricsToken[]): WordGroup[] {
-  const words: WordGroup[] = [];
-  let current: WordSegment[] = [];
-  let pendingChord: string | null = null;
-
-  for (const token of tokens) {
-    if (token.type === "chord") {
-      pendingChord = token.name;
-      continue;
-    }
-    const parts = token.content.split(/(\s+)/);
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i] ?? "";
-      if (part === "") continue;
-      if (/^\s+$/.test(part)) {
-        if (current.length) {
-          words.push(current);
-          current = [];
-        }
-        words.push(" ");
-      } else {
-        current.push({ chord: i === 0 ? pendingChord : null, text: part });
-        pendingChord = null;
-      }
-    }
-  }
-  if (current.length) words.push(current);
-
-  return words;
-}
-
-interface LineProps {
-  tokens: LyricsToken[];
-  steps: number;
-  showChords: boolean;
-  fontSize: number;
-  dark: boolean;
-}
-
-function LyricsLineView({
-  tokens,
-  steps,
-  showChords,
-  fontSize,
-  dark,
-}: LineProps) {
-  const chordColor = dark ? "var(--gold)" : "var(--orange)";
-  const textColor = dark ? "var(--cream)" : "var(--ink)";
-  const hasChords = tokens.some((t) => t.type === "chord");
-  const words = buildWordGroups(tokens);
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        alignItems: "flex-end",
-        rowGap: showChords && hasChords ? fontSize * 0.5 : 0,
-      }}
-    >
-      {words.map((word, wi) =>
-        word === " " ? (
-          <span key={wi} style={{ width: fontSize * 0.28 }} />
-        ) : (
-          <span
-            key={wi}
-            style={{
-              display: "inline-flex",
-              alignItems: "flex-end",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {word.map((seg, si) => (
-              <span
-                key={si}
-                style={{ display: "inline-flex", flexDirection: "column" }}
-              >
-                {showChords && (
-                  <span
-                    style={{
-                      fontFamily: "var(--font-jetbrains)",
-                      fontWeight: 700,
-                      fontSize: fontSize * 0.72,
-                      color: chordColor,
-                      height: hasChords ? fontSize * 0.95 : 0,
-                      lineHeight: 1,
-                      whiteSpace: "pre",
-                    }}
-                  >
-                    {seg.chord ? transposeChord(seg.chord, steps) : ""}
-                  </span>
-                )}
-                <span
-                  style={{
-                    fontFamily: "var(--font-hanken)",
-                    fontSize,
-                    color: textColor,
-                    whiteSpace: "pre",
-                  }}
-                >
-                  {seg.text || "​"}
-                </span>
-              </span>
-            ))}
-          </span>
-        )
-      )}
-    </div>
-  );
-}
+import { useFitScale } from "@/hooks/useFitScale";
 
 interface LyricsItem {
   type: "verse" | "chorus";
@@ -135,76 +13,80 @@ interface LyricsItems {
   chords: LyricsItem[];
 }
 
+interface LyricsRendererProps {
+  lyrics: LyricsItems;
+  showChords: boolean;
+  fontSize: number;
+}
+
+interface ChordBlocksProps {
+  chords: LyricsItem[];
+  fontSize: number;
+}
+
+function SectionLabel({ type }: { type: LyricsItem["type"] }) {
+  return (
+    <div className="font-[var(--font-hanken)] text-[11px] font-bold tracking-[0.14em] uppercase text-[var(--muted)] mb-[7px]">
+      {type === "verse" ? "Estribillo" : "Coro"}
+    </div>
+  );
+}
+
+function ChordBlocks({ chords, fontSize }: ChordBlocksProps) {
+  const { containerRef, contentRef, scale, naturalHeight } = useFitScale({
+    deps: [fontSize, chords],
+  });
+
+  const measured = naturalHeight > 0;
+
+  return (
+    <div
+      ref={containerRef}
+      className="overflow-hidden relative"
+      style={measured ? { height: naturalHeight * scale } : undefined}
+    >
+      <div
+        ref={contentRef}
+        className={cn("w-fit top-0 left-0 origin-top-left", measured ? "absolute" : "relative")}
+        style={{ transform: `scale(${scale})` }}
+      >
+        <div className="flex flex-col gap-8">
+          {chords.map((item, i) => (
+            <div key={i}>
+              <SectionLabel type={item.type} />
+              <div
+                className="flex flex-col whitespace-pre font-mono"
+                style={{ fontSize: fontSize - 4, gap: (fontSize - 4) * 0.4 }}
+                dangerouslySetInnerHTML={{ __html: item.content }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LyricsRenderer({
   lyrics = { lyric: [], chords: [] },
   showChords = true,
   fontSize = 18,
 }: LyricsRendererProps) {
   return (
-    <div
-      className="flex flex-col gap-8"
-      data-testid="lyrics-renderer"
-    >
-      {!showChords && lyrics.lyric.map((item: LyricsItem, i: number) => (
-        <div
-          key={i}
-        >
-          <div
-            style={{
-              fontFamily: "var(--font-hanken)",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              color: "var(--muted)",
-              marginBottom: 7,
-            }}
-          >
-            {item.type === 'verse' ? 'Estribillo' : 'Coro'}
+    <div className="flex flex-col gap-8" data-testid="lyrics-renderer">
+      {!showChords &&
+        lyrics.lyric.map((item, i) => (
+          <div key={i}>
+            <SectionLabel type={item.type} />
+            <div
+              className="flex flex-col"
+              style={{ fontSize, gap: fontSize * 0.4 }}
+              dangerouslySetInnerHTML={{ __html: item.content }}
+            />
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              fontSize: fontSize,
-              gap: fontSize * 0.4,
-            }}
-            dangerouslySetInnerHTML={{ __html: item.content }}
-          >
-          </div>
-        </div>
-      ))}
+        ))}
 
-      {showChords && lyrics.chords.map((item: LyricsItem, i: number) => (
-        <div
-        key={i}
-      >
-        <div
-          style={{
-            fontFamily: "var(--font-hanken)",
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "var(--muted)",
-            marginBottom: 7,
-          }}
-        >
-          {item.type === 'verse' ? 'Estribillo' : 'Coro'}
-        </div>
-        <pre
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontSize: fontSize - 4,
-            gap: (fontSize - 4) * 0.4,
-            fontFamily: "monospace",
-          }}
-          dangerouslySetInnerHTML={{ __html: item.content }}
-        >
-        </pre>
-      </div>
-      ))}
+      {showChords && <ChordBlocks chords={lyrics.chords} fontSize={fontSize} />}
     </div>
   );
 }
