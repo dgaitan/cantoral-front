@@ -38,9 +38,8 @@ export interface SongLyric {
 
 export interface Song extends SongListItem {
   plain_lyrics: string | null;
-  lyrics: string | null;
+  lyrics: SongLyric | null;
   lyrics_with_chords: string | null;
-  lyric: SongLyric | null;
   youtube_url: string | null;
   presentation_background_color: string | null;
   presentation_text_color: string | null;
@@ -49,4 +48,36 @@ export interface Song extends SongListItem {
   meta_description: string | null;
   meta_keywords: string | null;
   is_public: boolean;
+}
+
+// ── Presentation ─────────────────────────────────────────────────────────────
+
+/** First slide: shows song title and author credits. */
+export interface PresentationTitleSlide {
+  type: "presentation";
+  name: string;
+  authors: string; // pre-formatted, e.g. "M,L: David A. Mijares"
+}
+
+/** Subsequent slides: one verse / chorus / bridge per slide. */
+export interface PresentationLyricSlide {
+  type: "standard";
+  label?: string | null;
+  content: string;
+}
+
+export type SongPresentationSlide = PresentationTitleSlide | PresentationLyricSlide;
+
+export interface SongPresentationProps {
+  slides: SongPresentationSlide[];
+  bgColor?: string;
+  textColor?: string;
+  fontSize?: number;
+}
+
+export interface PresentationProgressBarProps {
+  current: number;
+  total: number;
+  onPrev: () => void;
+  onNext: () => void;
 }

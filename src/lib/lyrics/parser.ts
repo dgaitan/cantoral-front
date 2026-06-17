@@ -10,12 +10,6 @@ export interface LyricsBlock {
   isChorus: boolean;
 }
 
-export interface PresentationSlide {
-  label?: string;
-  content: string; // HTML string — <p> per line
-  isChorus: boolean;
-}
-
 const SECTION_LABEL_RE =
   /^(estribillo|coro|estrofa|verso|puente|interludio|\d+[.)]?)\s*$/i;
 
@@ -74,44 +68,3 @@ export function lyricsToPlainText(raw: string): string {
     .trim();
 }
 
-/** Split raw lyrics string into presentation slides (one per stanza). Fallback for songs without structured lyric data. */
-export function lyricsToSlides(
-  raw: string,
-  options: { withChords?: boolean; transposer?: (chord: string) => string } = {}
-): PresentationSlide[] {
-  const { withChords = false, transposer } = options;
-  return raw
-    .split(/\n\s*\n/)
-    .map((block) => {
-      const trimmed = block.trim();
-      if (!trimmed) return null;
-
-      const lines = trimmed.split("\n");
-      const firstLine = lines[0] ?? "";
-      const hasLabel = !firstLine.includes("{") && SECTION_LABEL_RE.test(firstLine);
-      const label = hasLabel ? firstLine.trim() : undefined;
-      const contentLines = hasLabel ? lines.slice(1) : lines;
-
-      let processedLines: string[];
-      if (withChords) {
-        processedLines = contentLines.map((line) =>
-          line.replace(/\{([^}]+)\}/g, (_, name: string) =>
-            `[${transposer ? transposer(name) : name}]`
-          )
-        );
-      } else {
-        processedLines = contentLines
-          .map((line) => line.replace(/\{[^}]+\}/g, "").replace(/[ \t]+/g, " ").trim())
-          .filter((line) => line.length > 0);
-      }
-
-      if (processedLines.length === 0) return null;
-
-      return {
-        label,
-        content: processedLines.map((line) => `<p>${line}</p>`).join(""),
-        isChorus: /estribillo|coro/i.test(label ?? ""),
-      };
-    })
-    .filter(Boolean) as PresentationSlide[];
-}

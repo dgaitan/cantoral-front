@@ -74,6 +74,18 @@ Atomic design under `src/components/`:
 - `organisms/` — LyricsRenderer, ChordControls, SongDetail, Navbar, BottomNav, RevealPresentation, SongList
 - `templates/` — PublicLayout, DashboardLayout, PresentationLayout
 
+**Co-located child components:** When an organism grows beyond ~80 lines or has distinct visual sections, split into named child files _within the same folder_. Children are never exported from the tier's `index.ts`.
+
+**Types in `src/types/`, never inline:** Every props interface belongs in `src/types/` (grouped by domain, e.g. `song.ts`), not declared inside the component file. Import with `import type { ... } from "@/types/song"`.
+
+```
+organisms/SongPresentation/
+  SongPresentation.tsx          ← parent (the only public export)
+  PresentationSlide.tsx         ← child — slide content area
+  PresentationProgressBar.tsx   ← child — nav buttons + progress bar
+  SongPresentation.spec.tsx     ← tests always import from the parent
+```
+
 ### Component Standards
 
 **HeroUI-first rule:** Before building any UI component, check if HeroUI has one. Always use HeroUI components for inputs, buttons, selects, modals, OTP inputs, and toasts.

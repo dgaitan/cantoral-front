@@ -2,19 +2,12 @@
 
 import { cn } from "@/lib/utils/cn";
 import { useFitScale } from "@/hooks/useFitScale";
+import type { SongLyric } from "@/types";
 
-interface LyricsItem {
-  type: "verse" | "chorus";
-  content: string;
-}
-
-interface LyricsItems {
-  lyric: LyricsItem[];
-  chords: LyricsItem[];
-}
+type LyricsItem = SongLyric["lyric"][number];
 
 interface LyricsRendererProps {
-  lyrics: LyricsItems;
+  lyrics: SongLyric | null;
   showChords: boolean;
   fontSize: number;
 }
@@ -68,14 +61,17 @@ function ChordBlocks({ chords, fontSize }: ChordBlocksProps) {
 }
 
 export function LyricsRenderer({
-  lyrics = { lyric: [], chords: [] },
+  lyrics,
   showChords = true,
   fontSize = 18,
 }: LyricsRendererProps) {
+  const lyricItems = lyrics?.lyric ?? [];
+  const chordItems = lyrics?.chords ?? [];
+
   return (
     <div className="flex flex-col gap-8" data-testid="lyrics-renderer">
       {!showChords &&
-        lyrics.lyric.map((item, i) => (
+        lyricItems.map((item, i) => (
           <div key={i}>
             <SectionLabel type={item.type} />
             <div
@@ -86,7 +82,7 @@ export function LyricsRenderer({
           </div>
         ))}
 
-      {showChords && <ChordBlocks chords={lyrics.chords} fontSize={fontSize} />}
+      {showChords && <ChordBlocks chords={chordItems} fontSize={fontSize} />}
     </div>
   );
 }
