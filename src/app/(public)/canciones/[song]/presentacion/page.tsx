@@ -31,7 +31,7 @@ export default function PresentacionPage({ params }: Props) {
     };
 
     const standardSlides: SongPresentationSlide[] = song.lyrics?.lyric?.map((block) => ({
-      label: block.type === "chorus" ? "Estribillo" : undefined,
+      label: block.type === "chorus" ? "Coro" : "Estrofa",
       content: block.content,
       song,
       type: "standard",
