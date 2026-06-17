@@ -59,7 +59,7 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
     .filter((s) => s.id !== song.id)
     .slice(0, 5);
 
-  const hasStructured = !!song.lyric;
+  const hasStructured = !!song.lyrics;
   const rawLyricsFallback = stripFrontmatter(song.plain_lyrics ?? song.lyrics_with_chords);
   const hasLyrics = hasStructured || !!rawLyricsFallback;
 
@@ -173,7 +173,7 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
         <div className="mb-8">
           {hasStructured ? (
             <StructuredLyricsRenderer
-              blocks={showChords ? song.lyric!.chords : song.lyric!.lyric}
+              blocks={showChords ? song.lyrics!.chords : song.lyrics!.lyric}
               showChords={showChords}
               steps={steps}
               fontSize={fontSize}

@@ -14,6 +14,7 @@ export interface PresentationSlide {
   label?: string;
   content: string; // HTML string — <p> per line
   isChorus: boolean;
+  type: "standard" | "presentation";
 }
 
 const SECTION_LABEL_RE =
