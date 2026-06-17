@@ -50,12 +50,23 @@ export interface Song extends SongListItem {
   is_public: boolean;
 }
 
-export interface SongPresentationSlide {
-  label?: string | null;
-  content?: string | null;
-  song: Song;
-  type: "presentation" | "standard";
+// ── Presentation ─────────────────────────────────────────────────────────────
+
+/** First slide: shows song title and author credits. */
+export interface PresentationTitleSlide {
+  type: "presentation";
+  name: string;
+  authors: string; // pre-formatted, e.g. "M,L: David A. Mijares"
 }
+
+/** Subsequent slides: one verse / chorus / bridge per slide. */
+export interface PresentationLyricSlide {
+  type: "standard";
+  label?: string | null;
+  content: string;
+}
+
+export type SongPresentationSlide = PresentationTitleSlide | PresentationLyricSlide;
 
 export interface SongPresentationProps {
   slides: SongPresentationSlide[];

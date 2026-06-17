@@ -1,6 +1,17 @@
 import type { SongPresentationSlide } from "@/types/song";
 
-function StandardContent({ label, content }: Omit<SongPresentationSlide, "song" | "type">) {
+function TitleSlideContent({ name, authors }: { name: string; authors: string }) {
+  return (
+    <>
+      <h1 className="text-4xl font-bold">{name}</h1>
+      <p className="text-lg font-medium">
+        <em>{authors}</em>
+      </p>
+    </>
+  );
+}
+
+function LyricSlideContent({ label, content }: { label?: string | null; content: string }) {
   return (
     <>
       {label && (
@@ -10,28 +21,20 @@ function StandardContent({ label, content }: Omit<SongPresentationSlide, "song" 
       )}
       <div
         className="font-[var(--font-newsreader)] leading-relaxed [&_p]:mb-2 [&_p:last-child]:mb-0 w-full max-w-4xl"
-        dangerouslySetInnerHTML={{ __html: content ?? "" }}
+        dangerouslySetInnerHTML={{ __html: content }}
       />
     </>
   );
 }
 
-function SongPresentationSlide({ song }: Omit<SongPresentationSlide, "label" | "content" | "type">) {
+export function PresentationSlide(slide: SongPresentationSlide) {
   return (
-    <>
-        <h1 className="text-4xl font-bold">{song.name}</h1>
-        <p className="text-lg font-medium"><em>M,L: {song.authors?.map((author) => author.name).join(", ")}</em></p>
-    </>
+    <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
+      {slide.type === "presentation" ? (
+        <TitleSlideContent name={slide.name} authors={slide.authors} />
+      ) : (
+        <LyricSlideContent label={slide.label} content={slide.content} />
+      )}
+    </div>
   );
-}
-
-export function PresentationSlide({ label, content, song, type }: SongPresentationSlide) {
-    return (
-        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-            {type === "presentation" 
-                ? <SongPresentationSlide song={song} /> 
-                : <StandardContent label={label} content={content} />
-            }
-        </div>
-    );
 }

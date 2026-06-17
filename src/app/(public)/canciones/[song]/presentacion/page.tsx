@@ -24,20 +24,20 @@ export default function PresentacionPage({ params }: Props) {
     if (!song) return [];
 
     const titleSlide: SongPresentationSlide = {
-      label: null,
-      content: null,
-      song,
       type: "presentation",
+      name: song.name,
+      authors: song.authors?.length
+        ? `M,L: ${song.authors.map((a) => a.name).join(", ")}`
+        : "Cancionero Católico",
     };
 
-    const standardSlides: SongPresentationSlide[] = song.lyrics?.lyric?.map((block) => ({
-      label: block.type === "chorus" ? "Coro" : "Estrofa",
-      content: block.content,
-      song,
+    const lyricSlides: SongPresentationSlide[] = (song.lyrics?.lyric ?? []).map((block) => ({
       type: "standard",
-    })) ?? [];
+      label: block.type === "chorus" ? "Estribillo" : undefined,
+      content: block.content,
+    }));
 
-    return [titleSlide, ...standardSlides];
+    return [titleSlide, ...lyricSlides];
   }, [song]);
 
   const detailHref = song
@@ -99,4 +99,3 @@ export default function PresentacionPage({ params }: Props) {
     </PresentationLayout>
   );
 }
-

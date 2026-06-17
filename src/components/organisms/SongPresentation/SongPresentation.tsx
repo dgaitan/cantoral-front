@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import type { SongPresentationProps, SongPresentationSlide } from "@/types/song";
+import type { SongPresentationProps } from "@/types/song";
 import { PresentationSlide } from "./PresentationSlide";
 import { PresentationProgressBar } from "./PresentationProgressBar";
 
@@ -49,7 +49,7 @@ export function SongPresentation({
     [goNext, goPrev]
   );
 
-  const slide: SongPresentationSlide | undefined = slides[current];
+  const slide = slides[current];
 
   return (
     <div

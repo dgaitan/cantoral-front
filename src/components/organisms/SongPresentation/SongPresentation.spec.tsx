@@ -2,41 +2,14 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect } from "vitest";
 import { SongPresentation } from "./SongPresentation";
-import type { Song, SongPresentationSlide } from "@/types/song";
-
-const mockSong: Song = {
-  id: "136",
-  name: "Cristo Vive en Mi",
-  slug: "cristo-vive-en-mi",
-  short_description: null,
-  image: null,
-  has_lyrics: true,
-  views: null,
-  likes: null,
-  tone: null,
-  created_at: null,
-  updated_at: null,
-  authors: [{ id: "1", name: "David A. Mijares", slug: "david-a-mijares" }],
-  tags: [],
-  plain_lyrics: null,
-  lyrics: null,
-  lyrics_with_chords: null,
-  youtube_url: null,
-  presentation_background_color: null,
-  presentation_text_color: null,
-  presentation_font_size: null,
-  meta_title: null,
-  meta_description: null,
-  meta_keywords: null,
-  is_public: true,
-};
+import type { SongPresentationSlide } from "@/types/song";
 
 const slides: SongPresentationSlide[] = [
-  { type: "presentation", song: mockSong, label: null, content: null },
-  { type: "standard", song: mockSong, content: "<p>Señor, hoy yo me quiero ofrendar</p>" },
-  { type: "standard", song: mockSong, label: "Estribillo", content: "<p>Cristo vive en mí</p>" },
-  { type: "standard", song: mockSong, content: "<p>Señor, me quiero comprometer</p>" },
-  { type: "standard", song: mockSong, content: "<p>Cristo está vivo en mí</p>" },
+  { type: "presentation", name: "Cristo Vive en Mi", authors: "M,L: David A. Mijares" },
+  { type: "standard", content: "<p>Señor, hoy yo me quiero ofrendar</p>" },
+  { type: "standard", label: "Estribillo", content: "<p>Cristo vive en mí</p>" },
+  { type: "standard", content: "<p>Señor, me quiero comprometer</p>" },
+  { type: "standard", content: "<p>Cristo está vivo en mí</p>" },
 ];
 
 describe("Song Presentation Slideshow", () => {
@@ -52,9 +25,7 @@ describe("Song Presentation Slideshow", () => {
     const user = userEvent.setup();
     render(<SongPresentation slides={slides} />);
     await user.keyboard("{ArrowRight}");
-    expect(
-      screen.getByText(/Señor, hoy yo me quiero ofrendar/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Señor, hoy yo me quiero ofrendar/)).toBeInTheDocument();
   });
 
   it("chorus slide shows Estribillo label", async () => {
@@ -73,9 +44,7 @@ describe("Song Presentation Slideshow", () => {
   });
 
   it("applies dark background and light text colors", () => {
-    render(
-      <SongPresentation slides={slides} bgColor="#202020" textColor="#ffffff" />
-    );
+    render(<SongPresentation slides={slides} bgColor="#202020" textColor="#ffffff" />);
     const container = screen.getByTestId("song-presentation");
     expect(container).toHaveStyle({ backgroundColor: "#202020", color: "#ffffff" });
   });
@@ -103,9 +72,7 @@ describe("Song Presentation Slideshow", () => {
     const user = userEvent.setup();
     render(<SongPresentation slides={slides} />);
     await user.keyboard("{ArrowRight}");
-    expect(
-      screen.getByText(/Señor, hoy yo me quiero ofrendar/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Señor, hoy yo me quiero ofrendar/)).toBeInTheDocument();
   });
 
   it("ArrowLeft key goes back to the previous slide", async () => {
@@ -135,23 +102,15 @@ describe("Song Presentation Slideshow", () => {
   it("next button advances to the next slide", async () => {
     const user = userEvent.setup();
     render(<SongPresentation slides={slides} />);
-    await user.click(
-      screen.getByRole("button", { name: /siguiente diapositiva/i })
-    );
-    expect(
-      screen.getByText(/Señor, hoy yo me quiero ofrendar/)
-    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /siguiente diapositiva/i }));
+    expect(screen.getByText(/Señor, hoy yo me quiero ofrendar/)).toBeInTheDocument();
   });
 
   it("previous button goes back to the prior slide", async () => {
     const user = userEvent.setup();
     render(<SongPresentation slides={slides} />);
-    await user.click(
-      screen.getByRole("button", { name: /siguiente diapositiva/i })
-    );
-    await user.click(
-      screen.getByRole("button", { name: /diapositiva anterior/i })
-    );
+    await user.click(screen.getByRole("button", { name: /siguiente diapositiva/i }));
+    await user.click(screen.getByRole("button", { name: /diapositiva anterior/i }));
     expect(screen.getByText("Cristo Vive en Mi")).toBeInTheDocument();
   });
 
