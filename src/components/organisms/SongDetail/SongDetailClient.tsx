@@ -14,7 +14,7 @@ import { ChordControls } from "@/components/organisms/ChordControls/ChordControl
 import { LyricsRenderer } from "@/components/organisms/LyricsRenderer/LyricsRenderer";
 import { StructuredLyricsRenderer } from "@/components/organisms/StructuredLyricsRenderer/StructuredLyricsRenderer";
 import { SongRow } from "@/components/molecules/SongRow/SongRow";
-import { transposeChord } from "@/lib/lyrics/transpose";
+import { transposeKey } from "@/lib/lyrics/transpose-spanish";
 import { buildSongParam } from "@/lib/utils/song-param";
 import type { Song } from "@/types";
 
@@ -64,7 +64,7 @@ export function SongDetailClient({ song, presentacionHref }: Props) {
   const hasLyrics = hasStructured || !!rawLyricsFallback;
 
   const baseKey = song.tone ?? "";
-  const displayKey = baseKey ? transposeChord(baseKey, steps) : "";
+  const displayKey = baseKey ? transposeKey(baseKey, steps) : "";
   const categoryName = song.tags?.[0]?.name;
   const authorName = song.authors.map((a) => a.name).join(", ");
 

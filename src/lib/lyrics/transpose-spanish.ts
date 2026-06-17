@@ -89,3 +89,17 @@ export function transposeSpanishChordLine(line: string, steps: number): string {
     }
   );
 }
+
+/**
+ * Transpose a single key token that may be in Spanish notation ("Sol", "SOL", "Lam")
+ * or standard English notation ("G", "Am"). Spanish keys are uppercased before
+ * transposition; English keys are passed directly to transposeChord.
+ * Returns the key unchanged when steps is 0.
+ */
+export function transposeKey(key: string, steps: number): string {
+  if (!key || steps === 0) return key;
+  const upper = key.toUpperCase();
+  const isSpanish = SP_ROOTS.split("|").some((r) => upper.startsWith(r));
+  if (isSpanish) return transposeSpanishChordLine(upper, steps);
+  return transposeChord(key, steps);
+}
