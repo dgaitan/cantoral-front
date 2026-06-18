@@ -115,3 +115,11 @@ export interface SongDetailSimilarProps {
   songs: SongListItem[];
   categoryName?: string;
 }
+
+export interface SongLyricsRendererProps {
+  lyrics: SongLyric;
+  showChords: boolean;
+  steps?: number;
+  fontSize?: number;
+  dark?: boolean;
+}

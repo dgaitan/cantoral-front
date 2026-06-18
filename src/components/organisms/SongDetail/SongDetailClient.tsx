@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSongs } from "@/hooks/useSongs";
 import { ChordControls } from "@/components/organisms/ChordControls/ChordControls";
-import { LyricsRenderer } from "@/components/organisms/LyricsRenderer/LyricsRenderer";
-import { StructuredLyricsRenderer } from "@/components/organisms/StructuredLyricsRenderer/StructuredLyricsRenderer";
+import { SongLyricsRenderer } from "@/components/organisms/SongLyricsRenderer/SongLyricsRenderer";
 import { transposeKey } from "@/lib/lyrics/transpose-spanish";
 import { SongDetailTopBar } from "./SongDetailTopBar";
 import { SongDetailHeader } from "./SongDetailHeader";
@@ -14,11 +13,6 @@ import { SongDetailActions } from "./SongDetailActions";
 import { SongDetailVideo } from "./SongDetailVideo";
 import { SongDetailSimilar } from "./SongDetailSimilar";
 import type { SongDetailProps } from "@/types/song";
-
-function stripFrontmatter(raw: string | null | undefined): string | null {
-  if (!raw) return null;
-  return raw.replace(/^---[\s\S]*?---\s*\n*/m, "").trim() || null;
-}
 
 export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
   const router = useRouter();
@@ -31,9 +25,7 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
     .filter((s) => s.id !== song.id)
     .slice(0, 5);
 
-  const hasStructured = !!song.lyrics;
-  const rawLyricsFallback = stripFrontmatter(song.plain_lyrics ?? song.lyrics_with_chords);
-  const hasLyrics = hasStructured || !!rawLyricsFallback;
+  const hasLyrics = !!song.lyrics;
 
   const baseKey = song.tone ?? "";
   const displayKey = baseKey ? transposeKey(baseKey, steps) : "";
@@ -64,17 +56,11 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
         )}
 
         <div className="mb-8">
-          {hasStructured ? (
-            <StructuredLyricsRenderer
-              blocks={showChords ? song.lyrics!.chords : song.lyrics!.lyric}
-              showChords={showChords}
-              steps={steps}
-              fontSize={fontSize}
-            />
-          ) : rawLyricsFallback ? (
-            <LyricsRenderer
+          {song.lyrics ? (
+            <SongLyricsRenderer
               lyrics={song.lyrics}
               showChords={showChords}
+              steps={steps}
               fontSize={fontSize}
             />
           ) : (
