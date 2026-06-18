@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
+import { useFitScale } from "@/hooks/useFitScale";
 import {
   isSpanishChordLine,
   transposeSpanishChordLine,
@@ -41,10 +42,16 @@ export function StructuredLyricsRenderer({
   fontSize = 18,
   dark = false,
 }: Props) {
+  const { containerRef, contentRef, scale, naturalHeight } = useFitScale({
+    deps: [fontSize, blocks, showChords, steps],
+  });
+
+  const measured = showChords && naturalHeight > 0;
+
   // Verse blocks are numbered 1-indexed; chorus/bridge are not numbered.
   let verseCount = 0;
 
-  return (
+  const inner = (
     <div
       data-testid="structured-lyrics-renderer"
       className="flex flex-col gap-[18px]"
@@ -110,6 +117,24 @@ export function StructuredLyricsRenderer({
           </div>
         );
       })}
+    </div>
+  );
+
+  if (!showChords) return inner;
+
+  return (
+    <div
+      ref={containerRef}
+      className="overflow-hidden relative"
+      style={measured ? { height: naturalHeight * scale } : undefined}
+    >
+      <div
+        ref={contentRef}
+        className={cn("w-fit top-0 left-0 origin-top-left", measured ? "absolute" : "relative")}
+        style={{ transform: `scale(${scale})` }}
+      >
+        {inner}
+      </div>
     </div>
   );
 }
