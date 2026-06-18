@@ -1,7 +1,7 @@
 export { HomeHero } from "./HomeHero/HomeHero";
 export { HomeSections } from "./HomeSections/HomeSections";
 export { SongList } from "./SongList/SongList";
-export { LyricsRenderer } from "./LyricsRenderer/LyricsRenderer";
+export { SongLyricsRenderer } from "./SongLyricsRenderer/SongLyricsRenderer";
 export { SongPresentation } from "./SongPresentation/SongPresentation";
 export { Navbar } from "./Navbar/Navbar";
 export { ChordControls } from "./ChordControls/ChordControls";

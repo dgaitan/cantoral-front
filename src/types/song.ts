@@ -81,3 +81,45 @@ export interface PresentationProgressBarProps {
   onPrev: () => void;
   onNext: () => void;
 }
+
+// ── SongDetail child props ────────────────────────────────────────────────────
+
+export interface SongDetailProps {
+  song: Song;
+  presentacionHref: string;
+}
+
+export interface SongDetailTopBarProps {
+  onBack: () => void;
+}
+
+export interface SongDetailHeaderProps {
+  song: Song;
+}
+
+export interface SongDetailMetaProps {
+  displayKey: string;
+  views: number | null;
+  likes: number | null;
+}
+
+export interface SongDetailActionsProps {
+  presentacionHref: string;
+}
+
+export interface SongDetailVideoProps {
+  youtubeUrl: string;
+}
+
+export interface SongDetailSimilarProps {
+  songs: SongListItem[];
+  categoryName?: string;
+}
+
+export interface SongLyricsRendererProps {
+  lyrics: SongLyric;
+  showChords: boolean;
+  steps?: number;
+  fontSize?: number;
+  dark?: boolean;
+}

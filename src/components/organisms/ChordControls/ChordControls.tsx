@@ -1,7 +1,7 @@
 "use client";
 
 import { Minus, Plus, Music } from "lucide-react";
-import { transposeChord } from "@/lib/lyrics/transpose";
+import { transposeKey } from "@/lib/lyrics/transpose-spanish";
 
 interface ChordControlsProps {
   steps: number;
@@ -37,7 +37,7 @@ export function ChordControls({
   onFontSizeChange,
   baseKey,
 }: ChordControlsProps) {
-  const currentKey = transposeChord(baseKey, steps);
+  const currentKey = transposeKey(baseKey, steps);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
