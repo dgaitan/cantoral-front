@@ -11,7 +11,7 @@ import {
 import { setMemoryToken, setRefreshToken } from "@/lib/auth/token";
 
 export function useAuth() {
-  const { user, isAuthenticated, setUser, clearAuth } = useAuthStore();
+  const { user, isAuthenticated, setUser, clearAuth, setIsAuthenticated } = useAuthStore();
 
   async function login(email: string, password: string): Promise<void> {
     await loginWithPassword(email, password);
@@ -31,6 +31,7 @@ export function useAuth() {
 
     setMemoryToken(access_token);
     setRefreshToken(refresh_token);
+    setIsAuthenticated(true);
 
     const userResponse = await fetchCurrentUser();
     if (userResponse.success && userResponse.data) {

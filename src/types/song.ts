@@ -24,6 +24,7 @@ export interface SongListItem {
   updated_at: string | null;
   authors: Author[];
   tags: Category[];
+  is_favorited?: boolean;
 }
 
 export interface LyricBlock {
@@ -91,6 +92,8 @@ export interface SongDetailProps {
 
 export interface SongDetailTopBarProps {
   onBack: () => void;
+  songId: string;
+  isFavorited: boolean;
 }
 
 export interface SongDetailHeaderProps {

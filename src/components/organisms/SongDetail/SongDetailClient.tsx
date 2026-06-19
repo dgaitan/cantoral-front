@@ -32,7 +32,11 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
 
   return (
     <div className="bg-[var(--paper)] min-h-screen">
-      <SongDetailTopBar onBack={() => router.back()} />
+      <SongDetailTopBar
+        onBack={() => router.back()}
+        songId={song.id}
+        isFavorited={song.is_favorited ?? false}
+      />
 
       <div className="px-5 pt-5">
         <SongDetailHeader song={song} />

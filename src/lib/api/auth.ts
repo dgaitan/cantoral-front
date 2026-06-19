@@ -65,6 +65,6 @@ export async function logoutUser(): Promise<void> {
 }
 
 export async function fetchCurrentUser(): Promise<DjangoResponse<User>> {
-  const { data } = await apiClient.get<DjangoResponse<User>>("/users/me/");
+  const { data } = await apiClient.get<DjangoResponse<User>>("/v1/profile");
   return data;
 }

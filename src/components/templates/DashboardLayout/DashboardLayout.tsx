@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Navbar } from "@/components/organisms/Navbar/Navbar";
 import { useAuthStore } from "@/store/authStore";
+import { PageLoader } from "@/components/atoms/PageLoader/PageLoader";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   }, [hasHydrated, isAuthenticated, router]);
 
-  if (!hasHydrated) return null;
+  if (!hasHydrated) return <PageLoader />;
 
   return (
     <>

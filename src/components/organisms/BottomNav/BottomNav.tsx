@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Search, ListMusic, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { useAuthStore } from "@/store/authStore";
 
-const NAV_ITEMS = [
+const STATIC_NAV_ITEMS = [
   { id: "home", label: "Inicio", icon: Home, href: "/" },
   { id: "explorar", label: "Explorar", icon: Search, href: "/explorar" },
   { id: "listas", label: "Listas", icon: ListMusic, href: "/listas" },
-  { id: "cuenta", label: "Cuenta", icon: User, href: "/login" },
 ] as const;
 
 function resolveTab(pathname: string): string {
@@ -18,7 +18,11 @@ function resolveTab(pathname: string): string {
     return "explorar";
   if (pathname.startsWith("/listas") || pathname.startsWith("/mis-listas"))
     return "listas";
-  if (pathname.startsWith("/auth") || pathname.startsWith("/dashboard"))
+  if (
+    pathname.startsWith("/perfil") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/dashboard")
+  )
     return "cuenta";
   return "home";
 }
@@ -26,13 +30,21 @@ function resolveTab(pathname: string): string {
 export function BottomNav() {
   const pathname = usePathname();
   const activeTab = resolveTab(pathname);
+  const { isAuthenticated, _hasHydrated } = useAuthStore();
+  // Before hydration, optimistically link to /perfil — guests will be redirected from there if needed.
+  const cuentaHref = _hasHydrated && !isAuthenticated ? "/login" : "/perfil";
+
+  const navItems = [
+    ...STATIC_NAV_ITEMS,
+    { id: "cuenta", label: "Cuenta", icon: User, href: cuentaHref },
+  ];
 
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-line bg-paper/[0.92] pt-[9px] pb-2 backdrop-blur-[14px]"
       aria-label="Navegación principal"
     >
-      {NAV_ITEMS.map(({ id, label, icon: Icon, href }) => {
+      {navItems.map(({ id, label, icon: Icon, href }) => {
         const active = activeTab === id;
         return (
           <Link

@@ -5,7 +5,6 @@ export interface User {
   can_create_songs: boolean;
   can_publish_songs: boolean;
   can_create_playlists: boolean;
-  is_admin: boolean;
 }
 
 export interface AuthTokens {
