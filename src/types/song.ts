@@ -8,6 +8,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  songs_count?: number;
 }
 
 export interface SongListItem {

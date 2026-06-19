@@ -63,7 +63,7 @@ function ExplorarContent() {
 
   return (
     <div className="bg-paper min-h-screen">
-      <div className="sticky -top-[60px] z-20 bg-paper/95 backdrop-blur-md border-b border-line px-5 pt-4 pb-2">
+      <div className="sticky -top-[60px] z-20 bg-paper/95 backdrop-blur-md border-b border-line px-5 pt-4 pb-2 max-w-[1100px] mx-auto lg:px-8">
         <h1 className="font-serif text-[26px] font-semibold text-ink mb-3.5">
           Explorar
         </h1>
@@ -81,37 +81,40 @@ function ExplorarContent() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-5 pt-3">
-        <span className="text-[13px] text-muted">
-          {isLoading ? "Cargando…" : `${count} canciones`}
-        </span>
-      </div>
+      <div className="max-w-[1100px] mx-auto px-5 lg:px-8">
+        <div className="flex items-center justify-between pt-3">
+          <span className="text-[13px] text-muted">
+            {isLoading ? "Cargando…" : `${count} canciones`}
+          </span>
+        </div>
 
-      <div className="px-5 pt-1">
-        {isLoading && songs.length === 0 && (
-          <div className="py-10 text-center text-muted">Cargando canciones…</div>
-        )}
-        {!isLoading && songs.length === 0 && (
-          <div className="py-10 text-center text-muted">
-            No se encontraron canciones
+        <div className=" pt-1">
+          {isLoading && songs.length === 0 && (
+            <div className="py-10 text-center text-muted">Cargando canciones…</div>
+          )}
+          {!isLoading && songs.length === 0 && (
+            <div className="py-10 text-center text-muted">
+              No se encontraron canciones
+            </div>
+          )}
+          {songs.map((song) => (
+            <SongRow
+              key={song.id}
+              song={song}
+              href={`/canciones/${buildSongParam(song.id, song.slug)}`}
+            />
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center py-6">
+            <PaginationBar page={page} totalPages={totalPages} onChange={handlePage} />
           </div>
         )}
-        {songs.map((song) => (
-          <SongRow
-            key={song.id}
-            song={song}
-            href={`/canciones/${buildSongParam(song.id, song.slug)}`}
-          />
-        ))}
+
+        <div className="h-[90px]" />
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center py-6">
-          <PaginationBar page={page} totalPages={totalPages} onChange={handlePage} />
-        </div>
-      )}
-
-      <div className="h-[90px]" />
     </div>
   );
 }

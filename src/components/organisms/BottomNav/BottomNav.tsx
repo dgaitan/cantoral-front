@@ -41,7 +41,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-line bg-paper/[0.92] pt-[9px] pb-2 backdrop-blur-[14px]"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-line bg-paper/[0.92] pt-[9px] pb-2 backdrop-blur-[14px]"
       aria-label="Navegación principal"
     >
       {navItems.map(({ id, label, icon: Icon, href }) => {
