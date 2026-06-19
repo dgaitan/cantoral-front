@@ -47,6 +47,8 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
       <SongDetailTopBar
         onBack={() => router.back()}
         songId={song.id}
+        songSlug={song.slug}
+        songTitle={song.name}
         isFavorited={isFavorited}
       />
 

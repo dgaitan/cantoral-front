@@ -93,6 +93,8 @@ export interface SongDetailProps {
 export interface SongDetailTopBarProps {
   onBack: () => void;
   songId: string;
+  songSlug: string;
+  songTitle: string;
   isFavorited: boolean;
 }
 
