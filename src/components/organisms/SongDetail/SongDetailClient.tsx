@@ -57,19 +57,10 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
         />
       </div>
 
-      {/* Desktop-only breadcrumb */}
-      <div className="hidden lg:block max-w-[1100px] mx-auto px-8">
-        <SongDetailBreadcrumb
-          categoryName={categoryName}
-          categoryId={categoryId}
-          songTitle={song.name}
-        />
-      </div>
-
       {/* Single responsive grid:
           mobile  → 1 col, sections stack in natural order
           desktop → [220px | 1fr | 220px] 3-col */}
-      <div className="max-w-[1100px] mx-auto px-5 pt-5 lg:px-8 lg:pt-6 lg:pb-12">
+      <div className="max-w-[1100px] mx-auto px-5 pt-5 lg:px-8 lg:pt-12 lg:pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] lg:gap-8 lg:items-start">
 
           {/* Col 1 — song info + controls */}
