@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import { useSongs } from "@/hooks/useSongs";
+import { fetchSong } from "@/lib/api/songs";
+import { useAuthStore } from "@/store/authStore";
 import { ChordControls } from "@/components/organisms/ChordControls/ChordControls";
 import { SongLyricsRenderer } from "@/components/organisms/SongLyricsRenderer/SongLyricsRenderer";
 import { transposeKey } from "@/lib/lyrics/transpose-spanish";
@@ -20,6 +23,15 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
   const [showChords, setShowChords] = useState(true);
   const [fontSize, setFontSize] = useState(18);
 
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  const { data: freshSongResponse } = useSWR(
+    isAuthenticated ? ["song", song.id] : null,
+    () => fetchSong(song.id),
+    { fallbackData: { success: true, data: song, errors: null, status: 200 } }
+  );
+  const isFavorited = freshSongResponse?.data?.is_favorited ?? song.is_favorited ?? false;
+
   const { data: similarData } = useSongs();
   const similarSongs = (similarData?.data?.results ?? [])
     .filter((s) => s.id !== song.id)
@@ -35,7 +47,7 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
       <SongDetailTopBar
         onBack={() => router.back()}
         songId={song.id}
-        isFavorited={song.is_favorited ?? false}
+        isFavorited={isFavorited}
       />
 
       <div className="px-5 pt-5">

@@ -16,8 +16,10 @@ interface FavoriteButtonProps {
 
 export function FavoriteButton({ songId, isFavorited, className }: FavoriteButtonProps) {
   const router = useRouter();
-  const [favorited, setFavorited] = useState(isFavorited);
+  // null = user hasn't interacted yet; prop drives the display
+  const [optimisticFavorited, setOptimisticFavorited] = useState<boolean | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const favorited = optimisticFavorited !== null ? optimisticFavorited : isFavorited;
 
   async function handlePress() {
     if (!getMemoryToken()) {
@@ -27,7 +29,7 @@ export function FavoriteButton({ songId, isFavorited, className }: FavoriteButto
     setIsPending(true);
     try {
       const res = await toggleFavorite(songId);
-      setFavorited(res.data.is_favorite);
+      setOptimisticFavorited(res.data.is_favorite);
     } finally {
       setIsPending(false);
     }
