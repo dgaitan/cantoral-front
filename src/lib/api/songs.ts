@@ -27,12 +27,13 @@ export async function fetchCategories(): Promise<Category[]> {
   try {
     const { data } = await apiClient.get<{
       success: boolean;
-      data: { results: Array<{ id: number; name: string; slug: string; parent_id: number | null }> };
+      data: { results: Array<{ id: number; name: string; slug: string; parent_id: number | null; songs_count?: number }> };
     }>("/v1/tags/");
     return (data.data?.results ?? []).map((tag) => ({
       id: String(tag.id),
       name: tag.name,
       slug: tag.slug,
+      ...(tag.songs_count != null ? { songs_count: tag.songs_count } : {}),
     }));
   } catch {
     return [];

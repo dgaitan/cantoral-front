@@ -15,6 +15,7 @@ import { SongDetailMeta } from "./SongDetailMeta";
 import { SongDetailActions } from "./SongDetailActions";
 import { SongDetailVideo } from "./SongDetailVideo";
 import { SongDetailSimilar } from "./SongDetailSimilar";
+import { SongDetailBreadcrumb } from "./SongDetailBreadcrumb";
 import type { SongDetailProps } from "@/types/song";
 
 export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
@@ -38,64 +39,88 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
     .slice(0, 5);
 
   const hasLyrics = !!song.lyrics;
-
   const baseKey = song.tone ?? "";
   const displayKey = baseKey ? transposeKey(baseKey, steps) : "";
+  const categoryName = song.tags?.[0]?.name;
+  const categoryId = song.tags?.[0]?.id;
 
   return (
     <div className="bg-[var(--paper)] min-h-screen">
-      <SongDetailTopBar
-        onBack={() => router.back()}
-        songId={song.id}
-        songSlug={song.slug}
-        songTitle={song.name}
-        isFavorited={isFavorited}
-      />
-
-      <div className="px-5 pt-5">
-        <SongDetailHeader song={song} />
-
-        <SongDetailMeta displayKey={displayKey} views={song.views} likes={song.likes} />
-
-        <SongDetailActions presentacionHref={presentacionHref} />
-
-        {hasLyrics && (
-          <div data-testid="chord-controls" className="bg-white border border-[var(--line)] rounded-[18px] p-4 mb-6">
-            <ChordControls
-              steps={steps}
-              onStepsChange={setSteps}
-              showChords={showChords}
-              onShowChordsChange={setShowChords}
-              fontSize={fontSize}
-              onFontSizeChange={setFontSize}
-              baseKey={baseKey}
-            />
-          </div>
-        )}
-
-        <div className="mb-8">
-          {song.lyrics ? (
-            <SongLyricsRenderer
-              lyrics={song.lyrics}
-              showChords={showChords}
-              steps={steps}
-              fontSize={fontSize}
-            />
-          ) : (
-            <p className="text-[var(--muted)] font-[family-name:var(--font-hanken)]">
-              Esta canción no tiene letra disponible.
-            </p>
-          )}
-        </div>
-
-        {song.youtube_url && <SongDetailVideo youtubeUrl={song.youtube_url} />}
-
-        {similarSongs.length > 0 && (
-          <SongDetailSimilar songs={similarSongs} categoryName={song.tags?.[0]?.name} />
-        )}
+      {/* Mobile-only sticky top bar */}
+      <div className="lg:hidden">
+        <SongDetailTopBar
+          onBack={() => router.back()}
+          songId={song.id}
+          songSlug={song.slug}
+          songTitle={song.name}
+          isFavorited={isFavorited}
+        />
       </div>
 
-      <div className="h-[90px]" />
+      {/* Single responsive grid:
+          mobile  → 1 col, sections stack in natural order
+          desktop → [220px | 1fr | 220px] 3-col */}
+      <div className="max-w-[1100px] mx-auto px-5 pt-5 lg:px-8 lg:pt-12 lg:pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] lg:gap-8 lg:items-start">
+
+          {/* Col 1 — song info + controls */}
+          <div className="lg:sticky lg:top-[84px]">
+            <SongDetailHeader song={song} />
+            <SongDetailMeta displayKey={displayKey} views={song.views} likes={song.likes} />
+            <SongDetailActions presentacionHref={presentacionHref} />
+
+            {hasLyrics && (
+              <div
+                data-testid="chord-controls"
+                className="bg-white border border-[var(--line)] rounded-[18px] p-4 mb-6"
+              >
+                <ChordControls
+                  steps={steps}
+                  onStepsChange={setSteps}
+                  showChords={showChords}
+                  onShowChordsChange={setShowChords}
+                  fontSize={fontSize}
+                  onFontSizeChange={setFontSize}
+                  baseKey={baseKey}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Col 2 — lyrics */}
+          <div className="min-w-0">
+            <h2 className="hidden lg:block font-serif text-[20px] font-semibold text-ink mb-5 mt-0">
+              Letra y acordes
+            </h2>
+
+            <div className="mb-8">
+              {song.lyrics ? (
+                <SongLyricsRenderer
+                  lyrics={song.lyrics}
+                  showChords={showChords}
+                  steps={steps}
+                  fontSize={fontSize}
+                />
+              ) : (
+                <p className="text-[var(--muted)] font-[family-name:var(--font-hanken)]">
+                  Esta canción no tiene letra disponible.
+                </p>
+              )}
+            </div>
+
+            {song.youtube_url && <SongDetailVideo youtubeUrl={song.youtube_url} />}
+          </div>
+
+          {/* Col 3 — similar songs */}
+          <div>
+            {similarSongs.length > 0 && (
+              <SongDetailSimilar songs={similarSongs} categoryName={categoryName} />
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="h-[90px] lg:hidden" />
     </div>
   );
 }

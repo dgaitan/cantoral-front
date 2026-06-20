@@ -14,12 +14,12 @@ export function HomeSections() {
   const recientes = songs.slice(0, 5);
 
   return (
-    <>
+    <div className="max-w-[1100px] mx-auto lg:px-8">
       {categories.length > 0 && <LiturgyMoments categories={categories} />}
 
       {rail.length > 0 && (
         <div className="pt-[18px] pb-2">
-          <div className="px-5">
+          <div className="px-5 lg:px-0">
             <SectionHead
               kicker="Para tu liturgia"
               title="Más buscadas"
@@ -27,7 +27,7 @@ export function HomeSections() {
               actionHref="/explorar"
             />
           </div>
-          <div className="flex gap-[14px] overflow-x-auto px-5 pt-0.5 pb-2 [scrollbar-width:none]">
+          <div className="flex gap-[14px] overflow-x-auto px-5 lg:px-0 pt-0.5 pb-2 [scrollbar-width:none]">
             {rail.map((song) => (
               <SongCard key={song.id} song={song} width={150} />
             ))}
@@ -36,7 +36,7 @@ export function HomeSections() {
       )}
 
       {recientes.length > 0 && (
-        <div className="px-5 pt-[14px]">
+        <div className="px-5 lg:px-0 pt-[14px]">
           <SectionHead kicker="Catálogo" title="Recién agregadas" />
           {recientes.map((song, i) => (
             <SongRow
@@ -50,7 +50,7 @@ export function HomeSections() {
       )}
 
       {songs.length === 0 && (
-        <div className="px-5 py-10 text-center">
+        <div className="px-5 lg:px-0 py-10 text-center">
           <p className="font-sans text-muted mb-4">Explora el catálogo de canciones</p>
           <Link
             href="/explorar"
@@ -60,6 +60,6 @@ export function HomeSections() {
           </Link>
         </div>
       )}
-    </>
+    </div>
   );
 }
