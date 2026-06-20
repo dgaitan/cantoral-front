@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 import { Logo } from "@/components/atoms/Logo/Logo";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { cn } from "@/lib/utils/cn";
@@ -21,6 +22,7 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
   const pathname = usePathname();
   const router = useRouter();
   const isWhite = logoStyle === "white";
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   return (
     <div className="absolute top-0 left-0 right-0 z-50">
@@ -64,23 +66,35 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
                 onFocus={() => router.push("/explorar")}
               />
             </div>
-            <Link
-              href={APP_URLS.LOGIN}
-              className={cn(
-                "font-sans text-[13.5px] font-semibold px-4 py-[9px] rounded-[12px] no-underline border transition-colors",
-                isWhite
-                  ? "text-cream border-cream/30 hover:bg-cream/10"
-                  : "text-ink border-ink/20 hover:bg-ink/5"
-              )}
-            >
-              Ingresar
-            </Link>
-            <Link
-              href={APP_URLS.REGISTER}
-              className="font-sans text-[13.5px] font-semibold px-4 py-[9px] rounded-[12px] no-underline bg-orange text-white hover:opacity-90 transition-opacity"
-            >
-              Crear cuenta
-            </Link>
+
+            {isAuthenticated ? (
+              <Link
+                href={APP_URLS.PROFILE}
+                className="font-sans text-[13.5px] font-semibold px-4 py-[9px] rounded-[12px] no-underline border transition-colors"
+              >
+                Mi cuenta
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href={APP_URLS.LOGIN}
+                  className={cn(
+                    "font-sans text-[13.5px] font-semibold px-4 py-[9px] rounded-[12px] no-underline border transition-colors",
+                    isWhite
+                      ? "text-cream border-cream/30 hover:bg-cream/10"
+                      : "text-ink border-ink/20 hover:bg-ink/5"
+                  )}
+                >
+                  Ingresar
+                </Link>
+                <Link
+                  href={APP_URLS.REGISTER}
+                  className="font-sans text-[13.5px] font-semibold px-4 py-[9px] rounded-[12px] no-underline bg-orange text-white hover:opacity-90 transition-opacity"
+                >
+                  Crear cuenta
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
