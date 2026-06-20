@@ -1,6 +1,8 @@
 "use client";
 
 import { Minus, Plus, Music } from "lucide-react";
+import { Button } from "@heroui/react";
+import { cn } from "@/lib/utils/cn";
 import { transposeKey } from "@/lib/lyrics/transpose-spanish";
 
 interface ChordControlsProps {
@@ -12,21 +14,6 @@ interface ChordControlsProps {
   onFontSizeChange: (size: number) => void;
   baseKey: string;
 }
-
-const ctrlBtn: React.CSSProperties = {
-  width: 40,
-  height: 34,
-  borderRadius: 9,
-  border: "none",
-  background: "#fff",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "var(--ink)",
-  boxShadow: "0 1px 2px rgba(10,29,43,0.08)",
-  flexShrink: 0,
-};
 
 export function ChordControls({
   steps,
@@ -40,167 +27,83 @@ export function ChordControls({
   const currentKey = transposeKey(baseKey, steps);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+    <div className="flex flex-col gap-[10px] lg:gap-6">
       {/* Tono row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span
-          style={{
-            fontFamily: "var(--font-hanken)",
-            fontSize: 12.5,
-            fontWeight: 700,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: "var(--muted)",
-            width: 56,
-            flexShrink: 0,
-          }}
-        >
+      <div className="flex flex-row lg:flex-col items-center lg:items-start gap-[10px]">
+        <span className="font-sans text-[12.5px] font-bold tracking-[0.12em] uppercase text-muted w-14 shrink-0">
           Tono
         </span>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            background: "var(--paper-2)",
-            borderRadius: 12,
-            padding: 5,
-          }}
-        >
-          <button
-            onClick={() => onStepsChange(steps - 1)}
-            style={ctrlBtn}
+        <div className="flex-1 lg:w-full flex items-center justify-between bg-paper-2 rounded-[50px] p-[5px]">
+          <Button
+            isIconOnly
+            onPress={() => onStepsChange(steps - 1)}
+            className="w-10 h-[34px] min-w-0  bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Bajar tono"
           >
             <Minus size={18} />
-          </button>
-          <div style={{ textAlign: "center" }}>
-            <span
-              data-testid="current-key"
-              style={{
-                fontFamily: "var(--font-jetbrains)",
-                fontSize: 18,
-                fontWeight: 700,
-                color: "var(--ink)",
-              }}
-            >
+          </Button>
+          <div className="text-center">
+            <span data-testid="current-key" className="font-mono text-[18px] font-bold text-ink">
               {currentKey}
             </span>
             {steps !== 0 && (
-              <span
-                style={{
-                  fontFamily: "var(--font-jetbrains)",
-                  fontSize: 12,
-                  color: "var(--orange)",
-                  marginLeft: 5,
-                }}
-              >
+              <span className="font-mono text-xs text-orange ml-[5px]">
                 {steps > 0 ? "+" : ""}
                 {steps}
               </span>
             )}
           </div>
-          <button
-            onClick={() => onStepsChange(steps + 1)}
-            style={ctrlBtn}
+          <Button
+            isIconOnly
+            onPress={() => onStepsChange(steps + 1)}
+            className="w-10 h-[34px] min-w-0 bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Subir tono"
           >
             <Plus size={18} />
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Texto + Acordes row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span
-          style={{
-            fontFamily: "var(--font-hanken)",
-            fontSize: 12.5,
-            fontWeight: 700,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: "var(--muted)",
-            width: 56,
-            flexShrink: 0,
-          }}
-        >
+      <div className="flex flex-row lg:flex-col items-center lg:items-start gap-[10px]">
+        <span className="font-sans text-[12.5px] font-bold tracking-[0.12em] uppercase text-muted w-14 shrink-0">
           Texto
         </span>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            background: "var(--paper-2)",
-            borderRadius: 12,
-            padding: 5,
-          }}
-        >
-          <button
-            onClick={() => onFontSizeChange(Math.max(15, fontSize - 1))}
-            style={ctrlBtn}
+        <div className="flex-1 lg:w-full flex items-center justify-between bg-paper-2 rounded-[50px] p-[5px]">
+          <Button
+            isIconOnly
+            onPress={() => onFontSizeChange(Math.max(15, fontSize - 1))}
+            className="w-10 h-[34px] min-w-0 bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Reducir texto"
           >
-            <span
-              style={{
-                fontFamily: "var(--font-newsreader)",
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              A
-            </span>
-          </button>
-          <span
-            style={{
-              fontFamily: "var(--font-hanken)",
-              fontSize: 13,
-              fontWeight: 600,
-              color: "var(--muted)",
-            }}
-          >
+            <span className="font-serif text-sm font-semibold">A</span>
+          </Button>
+          <span className="font-sans text-[13px] font-semibold text-muted">
             {fontSize}px
           </span>
-          <button
-            onClick={() => onFontSizeChange(Math.min(28, fontSize + 1))}
-            style={ctrlBtn}
+          <Button
+            isIconOnly
+            onPress={() => onFontSizeChange(Math.min(28, fontSize + 1))}
+            className="w-10 h-[34px] min-w-0 bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Aumentar texto"
           >
-            <span
-              style={{
-                fontFamily: "var(--font-newsreader)",
-                fontSize: 20,
-                fontWeight: 600,
-              }}
-            >
-              A
-            </span>
-          </button>
+            <span className="font-serif text-[20px] font-semibold">A</span>
+          </Button>
         </div>
-        <button
-          onClick={() => onShowChordsChange(!showChords)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 7,
-            padding: "9px 13px",
-            borderRadius: 12,
-            cursor: "pointer",
-            border: `1px solid ${showChords ? "transparent" : "var(--line)"}`,
-            background: showChords ? "var(--ink)" : "#fff",
-            color: showChords ? "#fff" : "var(--muted)",
-            fontFamily: "var(--font-hanken)",
-            fontSize: 13,
-            fontWeight: 600,
-            flexShrink: 0,
-          }}
-          aria-pressed={showChords}
-        >
-          <Music size={16} aria-hidden="true" /> Acordes
-        </button>
       </div>
+      <Button
+        onPress={() => onShowChordsChange(!showChords)}
+        aria-pressed={showChords}
+        fullWidth
+        className={cn(
+          "flex items-center gap-[7px] px-[13px] py-[9px] font-sans text-[13px] font-semibold shrink-0 h-auto border",
+          showChords
+            ? "bg-ink text-white border-transparent"
+            : "bg-white text-muted border-line"
+        )}
+      >
+        <Music size={16} aria-hidden="true" /> Acordes
+      </Button>
     </div>
   );
 }
