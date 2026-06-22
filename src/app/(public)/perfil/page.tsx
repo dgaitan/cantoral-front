@@ -1,29 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Tabs } from "@heroui/react";
 import { useAuthStore } from "@/store/authStore";
 import { useFavorites } from "@/hooks/useFavorites";
 import { SongBrowser } from "@/components/organisms/SongBrowser/SongBrowser";
 import { PageLoader } from "@/components/atoms/PageLoader/PageLoader";
-import APP_URLS from "@/lib/constants";
 import { Container } from "@/components/templates/Grid/Container";
 
 export default function PerfilPage() {
   const user = useAuthStore((s) => s.user);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
-  const router = useRouter();
 
-  useEffect(() => {
-    if (hasHydrated && !isAuthenticated) {
-      router.replace(APP_URLS.LOGIN);
-    }
-  }, [hasHydrated, isAuthenticated, router]);
-
-  if (!hasHydrated) return <PageLoader />;
-  if (!user) return null;
+  if (!user) return <PageLoader />;
 
   return (
     <div className="bg-paper min-h-screen">

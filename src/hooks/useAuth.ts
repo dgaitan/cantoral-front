@@ -1,17 +1,17 @@
 "use client";
 
 import { useAuthStore } from "@/store/authStore";
-import {
-  loginWithPassword,
-  registerUser,
-  verifyOtp,
-  logoutUser,
-  fetchCurrentUser,
-} from "@/lib/api/auth";
-import { setMemoryToken, setRefreshToken } from "@/lib/auth/token";
+import { loginWithPassword, registerUser, logoutUser } from "@/lib/api/auth";
+import { setMemoryToken } from "@/lib/auth/token";
+import type { User } from "@/types";
+
+interface VerifyResponse {
+  user: User;
+  access: string;
+}
 
 export function useAuth() {
-  const { user, isAuthenticated, setUser, clearAuth, setIsAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, setUser, clearAuth } = useAuthStore();
 
   async function login(email: string, password: string): Promise<void> {
     await loginWithPassword(email, password);
@@ -21,28 +21,31 @@ export function useAuth() {
     await registerUser(name, email, password);
   }
 
-  async function verifyToken(email: string, token: string): Promise<void> {
-    const authResponse = await verifyOtp(email, token);
-    if (!authResponse.success || !authResponse.data) {
-      throw new Error("Verificación fallida");
+  async function verifyToken(
+    email: string,
+    token: string,
+    type: "otp" | "magic" = "otp"
+  ): Promise<void> {
+    const res = await fetch("/api/auth/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, token, type }),
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      throw new Error(body.error ?? "Verificación fallida");
     }
 
-    const { access_token, refresh_token } = authResponse.data;
-
-    setMemoryToken(access_token);
-    setRefreshToken(refresh_token);
-    setIsAuthenticated(true);
-
-    const userResponse = await fetchCurrentUser();
-    if (userResponse.success && userResponse.data) {
-      setUser(userResponse.data);
-    }
+    const { user: verifiedUser, access } = (await res.json()) as VerifyResponse;
+    setMemoryToken(access);
+    setUser(verifiedUser);
   }
 
   async function logout(): Promise<void> {
     await logoutUser();
     setMemoryToken(null);
-    setRefreshToken(null);
     clearAuth();
   }
 

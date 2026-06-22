@@ -2,28 +2,15 @@ import axios, {
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from "axios";
-import { setOrRemoveLocalStorageItem, getLocalStorageItem } from "@/lib/utils/helpers";
 
-const ACCESS_TOKEN_KEY = "cc_access_token";
-const REFRESH_TOKEN_KEY = "cc_refresh_token";
-let memoryToken: string | null = getLocalStorageItem(ACCESS_TOKEN_KEY);
-
+let memoryToken: string | null = null;
 
 export function setMemoryToken(token: string | null): void {
   memoryToken = token;
-  setOrRemoveLocalStorageItem(ACCESS_TOKEN_KEY, token);
 }
 
 export function getMemoryToken(): string | null {
   return memoryToken;
-}
-
-export function setRefreshToken(token: string | null): void {
-  setOrRemoveLocalStorageItem(REFRESH_TOKEN_KEY, token);
-}
-
-export function getRefreshToken(): string | null {
-  return getLocalStorageItem(REFRESH_TOKEN_KEY);
 }
 
 let isRefreshing = false;
@@ -49,10 +36,8 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = memoryToken ?? getLocalStorageItem(ACCESS_TOKEN_KEY);
-  if (token) {
-    if (!memoryToken) memoryToken = token;
-    config.headers.Authorization = `Bearer ${token}`;
+  if (memoryToken) {
+    config.headers.Authorization = `Bearer ${memoryToken}`;
   }
   return config;
 });
@@ -79,19 +64,10 @@ apiClient.interceptors.response.use(
       original._retry = true;
       isRefreshing = true;
 
-      const refreshToken = getRefreshToken();
-      if (!refreshToken) {
-        processQueue(new Error("No refresh token"), null);
-        setMemoryToken(null);
-        isRefreshing = false;
-        return Promise.reject(err);
-      }
-
       try {
         const res = await fetch("/api/auth/refresh", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refresh: refreshToken }),
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Refresh failed");
         const body = (await res.json()) as { access: string };
@@ -99,11 +75,10 @@ apiClient.interceptors.response.use(
         processQueue(null, body.access);
         original.headers.Authorization = `Bearer ${body.access}`;
         return apiClient(original);
-      } catch (err) {
-        processQueue(err, null);
+      } catch (refreshErr) {
+        processQueue(refreshErr, null);
         setMemoryToken(null);
-        setRefreshToken(null);
-        return Promise.reject(err);
+        return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;
       }

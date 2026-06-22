@@ -7,11 +7,9 @@ import type { User } from "@/types";
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  _hasHydrated: boolean;
   setUser: (user: User) => void;
   setIsAuthenticated: (val: boolean) => void;
   clearAuth: () => void;
-  setHasHydrated: (val: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -19,18 +17,13 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      _hasHydrated: false,
       setUser: (user) => set({ user, isAuthenticated: true }),
       setIsAuthenticated: (val: boolean) => set({ isAuthenticated: val }),
       clearAuth: () => set({ user: null, isAuthenticated: false }),
-      setHasHydrated: (val) => set({ _hasHydrated: val }),
     }),
     {
       name: "cc-auth",
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
-      },
     }
   )
 );

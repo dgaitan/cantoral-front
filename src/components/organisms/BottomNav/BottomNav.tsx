@@ -30,9 +30,10 @@ function resolveTab(pathname: string): string {
 export function BottomNav() {
   const pathname = usePathname();
   const activeTab = resolveTab(pathname);
-  const { isAuthenticated, _hasHydrated } = useAuthStore();
-  // Before hydration, optimistically link to /perfil — guests will be redirected from there if needed.
-  const cuentaHref = _hasHydrated && !isAuthenticated ? "/login" : "/perfil";
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  // Unauthenticated users who tap Cuenta go to /login; authenticated go to /perfil.
+  // Middleware also enforces /perfil access server-side.
+  const cuentaHref = isAuthenticated ? "/perfil" : "/login";
 
   const navItems = [
     ...STATIC_NAV_ITEMS,
