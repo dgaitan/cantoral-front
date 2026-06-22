@@ -49,8 +49,10 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (memoryToken) {
-    config.headers.Authorization = `Bearer ${memoryToken}`;
+  const token = memoryToken ?? getLocalStorageItem(ACCESS_TOKEN_KEY);
+  if (token) {
+    if (!memoryToken) memoryToken = token;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
