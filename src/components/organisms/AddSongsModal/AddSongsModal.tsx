@@ -3,14 +3,7 @@
 import { X } from "lucide-react";
 import {
   Button,
-  ModalRoot,
-  ModalBackdrop,
-  ModalContainer,
-  ModalDialog,
-  ModalHeader,
-  ModalHeading,
-  ModalBody,
-  ModalCloseTrigger,
+  Modal,
   useOverlayState,
 } from "@heroui/react";
 import { AddSongsContent } from "@/components/organisms/AddSongsContent/AddSongsContent";
@@ -24,23 +17,26 @@ interface AddSongsModalProps {
 }
 
 export function AddSongsModal({ playlist, isOpen, onOpenChange, onDone }: AddSongsModalProps) {
-  const state = useOverlayState({ isOpen, onOpenChange });
+  // const state = useOverlayState({ isOpen, onOpenChange });
+  const state = useOverlayState();
 
   return (
-    <ModalRoot state={state}>
-      <ModalBackdrop isDismissable />
-      <ModalContainer size="lg">
-        <ModalDialog>
-          <ModalHeader className="flex items-start justify-between px-6 pt-6 pb-0">
+    <Modal.Backdrop isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal.Container size="lg">
+        <Modal.Dialog>
+          <Modal.Header className="flex items-start justify-between  pt-6 pb-0">
             <div>
-              <ModalHeading className="font-serif text-[20px] font-semibold text-ink">
+              <Modal.Heading className="font-serif text-[20px] font-semibold text-ink">
                 Agregar canciones
-              </ModalHeading>
+              </Modal.Heading>
               <p className="text-[13px] text-muted mt-0.5">
                 Busca y añade cantos a la lista.
               </p>
             </div>
-            <ModalCloseTrigger>
+            <Modal.CloseTrigger
+              aria-label="Cerrar"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-paper-2 hover:text-ink"
+            >
               <Button
                 isIconOnly
                 variant="ghost"
@@ -50,13 +46,13 @@ export function AddSongsModal({ playlist, isOpen, onOpenChange, onDone }: AddSon
               >
                 <X size={18} aria-hidden="true" />
               </Button>
-            </ModalCloseTrigger>
-          </ModalHeader>
-          <ModalBody className="px-6 pb-6 pt-4 max-h-[60vh] overflow-y-auto">
+            </Modal.CloseTrigger>
+          </Modal.Header>
+          <Modal.Body className="pt-4 max-h-[60vh] overflow-y-auto">
             <AddSongsContent playlistUuid={playlist.uuid} />
-          </ModalBody>
-        </ModalDialog>
-      </ModalContainer>
-    </ModalRoot>
+          </Modal.Body>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   );
 }
