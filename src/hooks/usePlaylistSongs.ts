@@ -1,12 +1,13 @@
 "use client";
 
 import useSWR from "swr";
-import { fetchPlaylistSongs } from "@/lib/api/playlists";
+import { fetcher } from "@/lib/api/fetcher";
+import type { PaginatedResponse, PlaylistSong } from "@/types";
 
 export function usePlaylistSongs(uuid: string, page = 1) {
   return useSWR(
     uuid ? ["playlist-songs", uuid, page] : null,
-    () => fetchPlaylistSongs(uuid, page),
-    { revalidateOnFocus: false }
+    () => fetcher<PaginatedResponse<PlaylistSong>>(`/api/playlists/${uuid}/songs?page=${page}`),
+    { revalidateOnFocus: false },
   );
 }

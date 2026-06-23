@@ -3,18 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CreatePlaylistForm } from "./CreatePlaylistForm";
 
-vi.mock("@/lib/api/playlists", () => ({
+vi.mock("@/actions/playlists", () => ({
   createPlaylist: vi.fn(),
 }));
 
-vi.mock("@/lib/utils/api-error", () => ({
-  extractApiError: vi.fn((err) => {
-    const msg = (err as { response?: { data?: { errors?: string[] } } })?.response?.data?.errors?.[0];
-    return msg ?? "Error desconocido";
-  }),
-}));
-
-import { createPlaylist } from "@/lib/api/playlists";
+import { createPlaylist } from "@/actions/playlists";
 
 const mockPlaylist = {
   uuid: "abc-123",
@@ -41,7 +34,7 @@ describe("Playlists — CreatePlaylistForm", () => {
   });
 
   it("calls createPlaylist with the correct payload when filled", async () => {
-    vi.mocked(createPlaylist).mockResolvedValue({ data: mockPlaylist, success: true, errors: null, status: 201 });
+    vi.mocked(createPlaylist).mockResolvedValue({ ok: true, data: mockPlaylist });
     render(<CreatePlaylistForm />);
 
     await userEvent.type(screen.getByPlaceholderText(/misa de pentecostés/i), "Mi Lista de Misa");
@@ -75,13 +68,11 @@ describe("Playlists — CreatePlaylistForm", () => {
     await waitFor(() =>
       expect(screen.getByRole("button", { name: /creando/i })).toBeDisabled()
     );
-    resolve({ data: mockPlaylist, success: true, errors: null, status: 201 });
+    resolve({ ok: true, data: mockPlaylist });
   });
 
   it("shows an API error message when the request fails", async () => {
-    vi.mocked(createPlaylist).mockRejectedValue({
-      response: { data: { errors: ["El nombre ya existe"] } },
-    });
+    vi.mocked(createPlaylist).mockResolvedValue({ ok: false, error: "El nombre ya existe" });
     render(<CreatePlaylistForm />);
 
     await userEvent.type(screen.getByPlaceholderText(/misa de pentecostés/i), "Test");
@@ -93,7 +84,7 @@ describe("Playlists — CreatePlaylistForm", () => {
   });
 
   it("calls onSuccess and resets the form after successful submission", async () => {
-    vi.mocked(createPlaylist).mockResolvedValue({ data: mockPlaylist, success: true, errors: null, status: 201 });
+    vi.mocked(createPlaylist).mockResolvedValue({ ok: true, data: mockPlaylist });
     const onSuccess = vi.fn();
     render(<CreatePlaylistForm onSuccess={onSuccess} />);
 

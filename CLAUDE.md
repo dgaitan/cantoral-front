@@ -36,27 +36,25 @@ Three route groups share layouts:
 - `(public)/` — canciones (song list + detail), explorar
 - `(dashboard)/` — favoritos, mis-listas (requires auth)
 
-Route Handlers under `api/auth/`: `refresh` (proxies token refresh to Django), `logout` (best-effort backend signout).
-
 Song detail URL format: `/canciones/{id}-{slug}` — see `src/lib/utils/song-param.ts` for encode/decode.
 
-### Auth Flow
+### Auth Flow — BFF (Backend-for-Frontend)
 
-Magic-link and OTP only (no passwords). Backend returns JWT tokens in the response body — no cookie-setting endpoint exists. After verification:
-1. `useAuth.verifyToken` calls `verifyOtp` → backend returns `{ access_token, refresh_token }` inside `DjangoResponse.data`
-2. `access_token` is stored in `memoryToken` (module-level variable in `src/lib/api/client.ts`) **and** persisted to `localStorage` under `cc_access_token`. On page reload, the module init reads it back.
-3. `refresh_token` is stored in `localStorage` under `cc_refresh_token` via `setRefreshToken()`.
-4. Every Axios request includes `Authorization: Bearer <access_token>` via the request interceptor in `client.ts`.
-5. On 401, the interceptor reads `cc_refresh_token` from localStorage, POSTs `{ refresh }` to `/api/auth/refresh` (Next.js BFF), updates `memoryToken`, and retries the original request. If refresh also fails, both tokens are cleared.
-6. Logout: `logoutUser()` sends `{ access, refresh }` in the body to `/api/auth/logout` → best-effort call to Django `/users/logout/`.
+Magic-link and OTP only (no passwords). **The browser never holds a token.** Every Django call goes through the Next.js server, which keeps the Django `access`/`refresh` tokens (plus the user) inside ONE **encrypted httpOnly cookie** (`cc_session`, JWE via `jose` + `JWT_SECRET`).
 
-**No httpOnly cookies.** The `set-cookies` route handler was removed — the backend never supported it. `jose`/`JWT_SECRET` is no longer used in the middleware.
+- **Session layer** (`src/lib/session/`): `crypto.ts` = pure JWE encrypt/decrypt (edge-safe, used by middleware); `session.ts` = `createSession`/`getSession`/`updateSessionTokens`/`deleteSession` via async `cookies()`; `dal.ts` = `getCurrentUser`/`verifySession` (React `cache`)/`requireSession`.
+- **Server-side Django client** (`src/lib/django/client.ts`): `djangoFetch<T>(path, { auth, optionalAuth, bearer, params, next })` — attaches the session's bearer, and on 401 refreshes via the refresh token, rotates the cookie, and retries once. `queries.ts` holds typed read functions shared by Server Components and route handlers.
+- **Server Actions** (`src/actions/`): `auth.ts` (`login`, `register`, `requestMagicLink`, `verifyOtp`, `verifyMagic`, `logout`), `favorites.ts` (`toggleFavorite`), `playlists.ts` (`createPlaylist`/`updatePlaylist`/`deletePlaylist`/`attachSongs`/`reorderSongs`). All return a typed `ActionResult<T>` (`{ ok, data } | { ok:false, error, fieldErrors }`) and validate input with shared Zod schemas in `src/lib/schemas/`. The same schema feeds the client `zodResolver` (react-hook-form) and the action's server `safeParse`.
+- **Verify flow:** `verifyOtp`/`verifyMagic` → Django `/auth/verify` → fetch `/v1/profile` → `createSession()` (sets cookie) → returns `{ user }`; the page calls `useAuth().refresh()` then navigates.
+- **Client user state:** no Zustand. `AuthProvider` (`src/components/providers/AuthProvider.tsx`, in the root layout) fetches `/api/auth/me` via SWR; `useAuth()` exposes `{ user, isAuthenticated, isLoading, refresh, logout }`. This keeps public pages **statically rendered** (no `cookies()` in layouts).
 
-**Middleware** (`src/proxy.ts`) is a pass-through — it returns `NextResponse.next()` for all matched routes. Route protection is handled client-side by `DashboardLayout`, which redirects to `/auth/login` via `useEffect` if `isAuthenticated` is false.
+**Route protection** — `src/proxy.ts` (Next 16's renamed middleware) **decrypts** the session and redirects: protected paths → `/login?from=` when unauthenticated, auth paths → `/` when authenticated. Public/protected/auth path lists live in `src/lib/auth/routes.ts`.
 
-**Security note:** Storing tokens in `localStorage` is vulnerable to XSS. This is an acceptable risk for this app given its low-sensitivity profile (Catholic songbook). If the threat model changes, migrate to httpOnly cookies with a proper backend session endpoint.
+**Reads** — interactive client reads use SWR pointed at internal BFF route handlers (`/api/songs`, `/api/songs/[id]`, `/api/categories`, `/api/favorites`, `/api/playlists`, `/api/playlists/[uuid]/songs`) via the `fetcher` in `src/lib/api/fetcher.ts`. Server Components call `src/lib/django/queries.ts` directly.
 
-User state lives in a Zustand store (`src/store/authStore.ts`) persisted to `localStorage` under `cc-auth` (includes `user` and `isAuthenticated`).
+**Security note:** Tokens live only in the encrypted httpOnly cookie — not in `localStorage`/`sessionStorage` — so they are not exposed to XSS.
+
+**Next.js 16 gotchas:** `cookies()` is async (always `await`); cookies can only be set in Server Actions / Route Handlers, never during Server Component render (hence authed reads go through SWR → route handlers); `revalidateTag(tag, "max")` requires the 2nd profile arg.
 
 ### Lyrics System (`src/lib/lyrics/`)
 
@@ -98,17 +96,17 @@ organisms/SongPresentation/
 
 **Reference pattern:** `src/components/molecules/LoginForm/LoginForm.tsx` (post-refactor).
 
-### API Layer (`src/lib/api/`)
+### API Layer
 
-`client.ts` exports a singleton Axios instance pointed at `NEXT_PUBLIC_API_URL`. Server Components and Route Handlers use `API_URL_INTERNAL` instead (bypasses the public gateway). Song detail pages fetch at `revalidate: 3600`.
+There is **no Axios client** and no client-side Django access. All Django traffic is server-side via `djangoFetch` (`src/lib/django/client.ts`) against `API_URL_INTERNAL`. The client only talks to internal Next.js endpoints: Server Actions (`src/actions/`) for mutations and BFF Route Handlers (`src/app/api/*`) for interactive reads, fetched with `src/lib/api/fetcher.ts`. Song detail pages fetch at `revalidate: 3600`; `toggleFavorite` revalidates `song-${id}`.
 
 ### Environment Variables
 
 | Variable | Usage |
 |---|---|
-| `NEXT_PUBLIC_API_URL` | Axios base URL (client-side) |
+| `NEXT_PUBLIC_API_URL` | Public Django origin (fallback for server fetch; not used for client Django calls) |
 | `NEXT_PUBLIC_APP_URL` | Canonical app origin |
 | `NEXT_PUBLIC_API_HOST` | Allowed hostname for `next/image` |
-| `API_URL_INTERNAL` | Server-side fetch URL (Route Handlers, Server Components) |
-| `JWT_SECRET` | No longer used by middleware (removed); may be retained for future server-side validation |
+| `API_URL_INTERNAL` | Server-side Django URL for `djangoFetch` (Route Handlers, Server Actions, Server Components) |
+| `JWT_SECRET` | **Required.** Derives the key that encrypts the `cc_session` cookie (`src/lib/session/crypto.ts`) and decrypts it in middleware |
 | `SITEMAP_SERVICE_TOKEN` | Long-lived token for sitemap ISR fetches |

@@ -7,8 +7,8 @@ import { Button } from "@heroui/react";
 import { PlaylistCoverArt } from "@/components/atoms/PlaylistCoverArt/PlaylistCoverArt";
 import { PlaylistSongList } from "./PlaylistSongList";
 import { AddSongsDialog } from "@/components/organisms/AddSongsDialog/AddSongsDialog";
-import { deletePlaylist } from "@/lib/api/playlists";
-import { useAuthStore } from "@/store/authStore";
+import { deletePlaylist } from "@/actions/playlists";
+import { useAuth } from "@/hooks/useAuth";
 import type { Playlist, PlaylistSong } from "@/types/playlist";
 
 interface PlaylistDetailProps {
@@ -19,7 +19,7 @@ interface PlaylistDetailProps {
 export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) {
   const [addSongsOpen, setAddSongsOpen] = useState(false);
   const router = useRouter();
-  const user = useAuthStore((s) => s.user);
+  const { user } = useAuth();
 
   const isOwner = !!user && Number(user.id) === playlist.owner_id;
   const canManage = isOwner || playlist.is_collaborative;
@@ -28,8 +28,8 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
 
   async function handleDelete() {
     if (!confirm("¿Eliminar esta lista? Esta acción no se puede deshacer.")) return;
-    await deletePlaylist(playlist.uuid);
-    router.push("/listas");
+    const res = await deletePlaylist(playlist.uuid);
+    if (res.ok) router.push("/listas");
   }
 
   return (

@@ -8,50 +8,49 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
-vi.mock("@/lib/api/client", () => ({
-  getMemoryToken: vi.fn(),
+let mockAuth = { isAuthenticated: false };
+vi.mock("@/hooks/useAuth", () => ({
+  useAuth: () => mockAuth,
 }));
 
-vi.mock("@/lib/api/favorites", () => ({
+vi.mock("@/actions/favorites", () => ({
   toggleFavorite: vi.fn(),
 }));
 
-import { getMemoryToken } from "@/lib/api/client";
-import { toggleFavorite } from "@/lib/api/favorites";
+import { toggleFavorite } from "@/actions/favorites";
 
 describe("Song Favorites — FavoriteButton", () => {
   beforeEach(() => {
     mockPush.mockClear();
     vi.mocked(toggleFavorite).mockClear();
+    mockAuth = { isAuthenticated: false };
   });
 
   it("guest user sees the heart button", () => {
-    vi.mocked(getMemoryToken).mockReturnValue(null);
     render(<FavoriteButton songId="1" isFavorited={false} />);
     expect(screen.getByRole("button", { name: /favorit/i })).toBeInTheDocument();
   });
 
   it("guest user is redirected to /register when clicking the heart button", async () => {
-    vi.mocked(getMemoryToken).mockReturnValue(null);
     render(<FavoriteButton songId="1" isFavorited={false} />);
     await userEvent.click(screen.getByRole("button", { name: /favorit/i }));
     expect(mockPush).toHaveBeenCalledWith("/register");
   });
 
   it("authenticated user sees an unfilled heart when the song is not favorited", () => {
-    vi.mocked(getMemoryToken).mockReturnValue("mock-token");
+    mockAuth = { isAuthenticated: true };
     render(<FavoriteButton songId="1" isFavorited={false} />);
     expect(screen.getByRole("button", { name: /agregar a favoritos/i })).toBeInTheDocument();
   });
 
   it("authenticated user sees a filled heart when the song is already favorited", () => {
-    vi.mocked(getMemoryToken).mockReturnValue("mock-token");
+    mockAuth = { isAuthenticated: true };
     render(<FavoriteButton songId="1" isFavorited={true} />);
     expect(screen.getByRole("button", { name: /quitar de favoritos/i })).toBeInTheDocument();
   });
 
   it("shows a spinner and disables the button while the API call is in flight", async () => {
-    vi.mocked(getMemoryToken).mockReturnValue("mock-token");
+    mockAuth = { isAuthenticated: true };
     let resolveToggle!: (val: unknown) => void;
     vi.mocked(toggleFavorite).mockReturnValue(
       new Promise((res) => { resolveToggle = res; }) as never
@@ -59,12 +58,12 @@ describe("Song Favorites — FavoriteButton", () => {
     render(<FavoriteButton songId="1" isFavorited={false} />);
     await userEvent.click(screen.getByRole("button", { name: /agregar a favoritos/i }));
     expect(screen.getByRole("button", { name: /cargando/i })).toBeDisabled();
-    resolveToggle({ data: { is_favorite: true } });
+    resolveToggle({ ok: true, data: { is_favorite: true } });
   });
 
   it("turns the heart active after successfully adding to favorites", async () => {
-    vi.mocked(getMemoryToken).mockReturnValue("mock-token");
-    vi.mocked(toggleFavorite).mockResolvedValue({ data: { is_favorite: true } } as never);
+    mockAuth = { isAuthenticated: true };
+    vi.mocked(toggleFavorite).mockResolvedValue({ ok: true, data: { is_favorite: true } } as never);
     render(<FavoriteButton songId="1" isFavorited={false} />);
     await userEvent.click(screen.getByRole("button", { name: /agregar a favoritos/i }));
     await waitFor(() =>
@@ -74,8 +73,8 @@ describe("Song Favorites — FavoriteButton", () => {
   });
 
   it("resets the heart to unfilled after successfully removing from favorites", async () => {
-    vi.mocked(getMemoryToken).mockReturnValue("mock-token");
-    vi.mocked(toggleFavorite).mockResolvedValue({ data: { is_favorite: false } } as never);
+    mockAuth = { isAuthenticated: true };
+    vi.mocked(toggleFavorite).mockResolvedValue({ ok: true, data: { is_favorite: false } } as never);
     render(<FavoriteButton songId="1" isFavorited={true} />);
     await userEvent.click(screen.getByRole("button", { name: /quitar de favoritos/i }));
     await waitFor(() =>

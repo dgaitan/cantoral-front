@@ -6,13 +6,13 @@ import { Button } from "@heroui/react";
 import { PlaylistCard } from "@/components/molecules/PlaylistCard/PlaylistCard";
 import { PlaylistDialog } from "@/components/organisms/PlaylistDialog/PlaylistDialog";
 import { usePlaylists } from "@/hooks/usePlaylists";
-import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import type { Playlist } from "@/types/playlist";
 
 export default function ListasPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const { data, isLoading, mutate } = usePlaylists();
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { isAuthenticated } = useAuth();
 
   const playlists: Playlist[] = data?.data?.results ?? [];
   const total = data?.data?.count ?? 0;

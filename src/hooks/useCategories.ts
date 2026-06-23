@@ -1,10 +1,11 @@
 "use client";
 
 import useSWR from "swr";
-import { fetchCategories } from "@/lib/api/songs";
+import { fetcher } from "@/lib/api/fetcher";
+import type { Category } from "@/types";
 
 export function useCategories() {
-  return useSWR("categories", fetchCategories, {
+  return useSWR("/api/categories", () => fetcher<Category[]>("/api/categories"), {
     revalidateOnFocus: false,
     dedupingInterval: 60_000,
   });

@@ -3,11 +3,12 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { verifyMagic } from "@/actions/auth";
 
 function VerificarContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { verifyToken } = useAuth();
+  const { refresh } = useAuth();
 
   const email = searchParams.get("email");
   const token = searchParams.get("token");
@@ -18,12 +19,15 @@ function VerificarContent() {
 
   useEffect(() => {
     if (!email || !token) return;
-    verifyToken(email, token)
-      .then(() => router.replace("/dashboard"))
-      .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Verificación fallida.");
-      });
-  }, [email, token, verifyToken, router]);
+    verifyMagic({ email, token }).then(async (res) => {
+      if (res.ok) {
+        await refresh();
+        router.replace("/dashboard");
+      } else {
+        setError(res.error);
+      }
+    });
+  }, [email, token, refresh, router]);
 
   if (error) {
     return (

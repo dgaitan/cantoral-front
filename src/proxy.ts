@@ -1,17 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE_NAME, PROTECTED_PATHS, AUTH_PATHS } from "@/lib/auth/constants";
+import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
+import { decryptSession } from "@/lib/session/crypto";
+import { isProtectedPath, isAuthPath } from "@/lib/auth/routes";
 
-export function proxy(request: NextRequest): NextResponse {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
-  const hasSession = request.cookies.has(SESSION_COOKIE_NAME);
+  const session = await decryptSession(request.cookies.get(SESSION_COOKIE_NAME)?.value);
+  const isAuthed = Boolean(session);
 
-  if (PROTECTED_PATHS.some((p) => pathname.startsWith(p)) && !hasSession) {
+  if (isProtectedPath(pathname) && !isAuthed) {
     const url = new URL("/login", request.url);
     url.searchParams.set("from", pathname);
     return NextResponse.redirect(url);
   }
 
-  if (AUTH_PATHS.some((p) => pathname.startsWith(p)) && hasSession) {
+  if (isAuthPath(pathname) && isAuthed) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

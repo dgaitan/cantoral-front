@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Eye, Users } from "lucide-react";
 import {
   Button,
@@ -15,18 +14,11 @@ import {
   SwitchThumb,
   SwitchContent,
 } from "@heroui/react";
-import { createPlaylist } from "@/lib/api/playlists";
-import { extractApiError } from "@/lib/utils/api-error";
+import { createPlaylist } from "@/actions/playlists";
+import { createPlaylistSchema, type CreatePlaylistInput } from "@/lib/schemas/playlist";
 import type { Playlist } from "@/types/playlist";
 
-const schema = z.object({
-  name: z.string().min(1, "El nombre es obligatorio"),
-  description: z.string().optional(),
-  is_public: z.boolean(),
-  is_collaborative: z.boolean(),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = CreatePlaylistInput;
 
 interface CreatePlaylistFormProps {
   onSuccess?: (playlist: Playlist) => void;
@@ -43,24 +35,19 @@ export function CreatePlaylistForm({ onSuccess, onCancel }: CreatePlaylistFormPr
     reset,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createPlaylistSchema),
     defaultValues: { is_public: false, is_collaborative: false },
   });
 
   async function onSubmit(values: FormValues) {
     setApiError(null);
-    try {
-      const res = await createPlaylist({
-        name: values.name,
-        description: values.description || undefined,
-        is_public: values.is_public,
-        is_collaborative: values.is_collaborative,
-      });
-      reset();
-      onSuccess?.(res.data);
-    } catch (err) {
-      setApiError(extractApiError(err));
+    const res = await createPlaylist(values);
+    if (!res.ok) {
+      setApiError(res.error);
+      return;
     }
+    reset();
+    onSuccess?.(res.data);
   }
 
   return (

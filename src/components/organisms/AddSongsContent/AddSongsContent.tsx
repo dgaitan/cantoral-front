@@ -5,7 +5,7 @@ import { Check, Plus } from "lucide-react";
 import { Button } from "@heroui/react";
 import { CoverArt } from "@/components/atoms/CoverArt/CoverArt";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
-import { attachSongsToPlaylist } from "@/lib/api/playlists";
+import { attachSongs } from "@/actions/playlists";
 import { useSongs } from "@/hooks/useSongs";
 import type { SongListItem } from "@/types/song";
 
@@ -26,7 +26,7 @@ export function AddSongsContent({ playlistUuid, initialSongIds = [] }: AddSongsC
     const id = Number(song.id);
     setPendingId(id);
     try {
-      await attachSongsToPlaylist(playlistUuid, [id]);
+      await attachSongs(playlistUuid, [id]);
       setAddedIds((prev) => {
         const next = new Set(prev);
         if (next.has(id)) {

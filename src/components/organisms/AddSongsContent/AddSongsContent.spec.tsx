@@ -8,12 +8,12 @@ vi.mock("@/hooks/useSongs", () => ({
   useSongs: vi.fn(),
 }));
 
-vi.mock("@/lib/api/playlists", () => ({
-  attachSongsToPlaylist: vi.fn(),
+vi.mock("@/actions/playlists", () => ({
+  attachSongs: vi.fn(),
 }));
 
 import { useSongs } from "@/hooks/useSongs";
-import { attachSongsToPlaylist } from "@/lib/api/playlists";
+import { attachSongs } from "@/actions/playlists";
 
 const makeSong = (id: string, name: string): SongListItem => ({
   id,
@@ -42,7 +42,7 @@ function mockHook(songs: SongListItem[], loading = false) {
 
 describe("Playlists — AddSongsContent", () => {
   beforeEach(() => {
-    vi.mocked(attachSongsToPlaylist).mockClear();
+    vi.mocked(attachSongs).mockClear();
   });
 
   afterEach(() => {
@@ -81,23 +81,23 @@ describe("Playlists — AddSongsContent", () => {
     expect(screen.getByRole("button", { name: /quitar kyrie/i })).toBeInTheDocument();
   });
 
-  it("calls attachSongsToPlaylist when toggling a song in", async () => {
-    vi.mocked(attachSongsToPlaylist).mockResolvedValue({ data: {}, success: true, errors: null, status: 200 });
+  it("calls attachSongs when toggling a song in", async () => {
+    vi.mocked(attachSongs).mockResolvedValue({ ok: true, data: undefined } as never);
     mockHook(THREE_SONGS);
     render(<AddSongsContent playlistUuid="uuid-1" initialSongIds={[]} />);
     await userEvent.click(screen.getByRole("button", { name: /añadir gloria/i }));
     await waitFor(() =>
-      expect(attachSongsToPlaylist).toHaveBeenCalledWith("uuid-1", [1])
+      expect(attachSongs).toHaveBeenCalledWith("uuid-1", [1])
     );
   });
 
-  it("calls attachSongsToPlaylist when toggling a song out", async () => {
-    vi.mocked(attachSongsToPlaylist).mockResolvedValue({ data: {}, success: true, errors: null, status: 200 });
+  it("calls attachSongs when toggling a song out", async () => {
+    vi.mocked(attachSongs).mockResolvedValue({ ok: true, data: undefined } as never);
     mockHook(THREE_SONGS);
     render(<AddSongsContent playlistUuid="uuid-1" initialSongIds={[1]} />);
     await userEvent.click(screen.getByRole("button", { name: /quitar gloria/i }));
     await waitFor(() =>
-      expect(attachSongsToPlaylist).toHaveBeenCalledWith("uuid-1", [1])
+      expect(attachSongs).toHaveBeenCalledWith("uuid-1", [1])
     );
   });
 

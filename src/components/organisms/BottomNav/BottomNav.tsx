@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Search, ListMusic, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 
 const STATIC_NAV_ITEMS = [
   { id: "home", label: "Inicio", icon: Home, href: "/" },
@@ -30,7 +30,7 @@ function resolveTab(pathname: string): string {
 export function BottomNav() {
   const pathname = usePathname();
   const activeTab = resolveTab(pathname);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { isAuthenticated } = useAuth();
   // Unauthenticated users who tap Cuenta go to /login; authenticated go to /perfil.
   // Middleware also enforces /perfil access server-side.
   const cuentaHref = isAuthenticated ? "/perfil" : "/login";

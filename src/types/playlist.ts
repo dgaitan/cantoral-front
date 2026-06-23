@@ -24,4 +24,4 @@ export interface CreatePlaylistPayload {
   is_collaborative?: boolean;
 }
 
-export interface UpdatePlaylistPayload extends Partial<CreatePlaylistPayload> {}
+export type UpdatePlaylistPayload = Partial<CreatePlaylistPayload>;

@@ -1,16 +1,16 @@
 "use client";
 
 import { Tabs } from "@heroui/react";
-import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
 import { SongBrowser } from "@/components/organisms/SongBrowser/SongBrowser";
 import { PageLoader } from "@/components/atoms/PageLoader/PageLoader";
 import { Container } from "@/components/templates/Grid/Container";
 
 export default function PerfilPage() {
-  const user = useAuthStore((s) => s.user);
+  const { user, isLoading } = useAuth();
 
-  if (!user) return <PageLoader />;
+  if (isLoading || !user) return <PageLoader />;
 
   return (
     <div className="bg-paper min-h-screen">

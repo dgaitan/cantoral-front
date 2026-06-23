@@ -21,7 +21,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { PlaylistSongRow } from "@/components/molecules/PlaylistSongRow/PlaylistSongRow";
-import { reorderPlaylistSongs, attachSongsToPlaylist } from "@/lib/api/playlists";
+import { reorderSongs, attachSongs } from "@/actions/playlists";
 import type { PlaylistSong } from "@/types/playlist";
 
 interface SortableRowProps {
@@ -81,14 +81,14 @@ export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: Play
     const reordered = arrayMove(songs, oldIndex, newIndex);
     setSongs(reordered);
 
-    await reorderPlaylistSongs(
+    await reorderSongs(
       playlistUuid,
       reordered.map((s) => Number(s.song.id))
     );
   }
 
   async function handleRemove(songId: number) {
-    await attachSongsToPlaylist(playlistUuid, [songId]);
+    await attachSongs(playlistUuid, [songId]);
     setSongs((prev) => prev.filter((s) => Number(s.song.id) !== songId));
   }
 

@@ -2,14 +2,10 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { TextField, Input, FieldError, Button } from "@heroui/react";
+import { magicLinkSchema, type MagicLinkInput } from "@/lib/schemas/auth";
 
-const schema = z.object({
-  email: z.string().email("Ingresa un correo electrónico válido"),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = MagicLinkInput;
 
 interface MagicLinkFormProps {
   onSubmit: (email: string) => Promise<void>;
@@ -21,7 +17,7 @@ export function MagicLinkForm({ onSubmit, loading = false }: MagicLinkFormProps)
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({ resolver: zodResolver(magicLinkSchema) });
 
   return (
     <form
