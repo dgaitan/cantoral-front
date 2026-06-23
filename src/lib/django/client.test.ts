@@ -49,7 +49,7 @@ describe("djangoFetch auth + refresh", () => {
 
     await djangoFetch("/v1/thing/", { auth: true });
 
-    const headers = (fetchMock.mock.calls[0][1]?.headers ?? {}) as Record<string, string>;
+    const headers = (fetchMock.mock.calls[0]?.[1]?.headers ?? {}) as Record<string, string>;
     expect(headers.Authorization).toBe("Bearer old-access");
   });
 
@@ -64,7 +64,7 @@ describe("djangoFetch auth + refresh", () => {
 
     expect(updateSessionTokens).toHaveBeenCalledWith("new-access", "the-refresh");
     expect(result.data.ok).toBe(true);
-    const retryHeaders = (fetchMock.mock.calls[2][1]?.headers ?? {}) as Record<string, string>;
+    const retryHeaders = (fetchMock.mock.calls[2]?.[1]?.headers ?? {}) as Record<string, string>;
     expect(retryHeaders.Authorization).toBe("Bearer new-access");
   });
 
@@ -80,5 +80,16 @@ describe("djangoFetch auth + refresh", () => {
   it("throws UnauthorizedError immediately when there is no session", async () => {
     getSession.mockResolvedValue(null);
     await expect(djangoFetch("/v1/thing/", { auth: true })).rejects.toBeInstanceOf(UnauthorizedError);
+  });
+
+  it("preserves a path prefix on the base URL (e.g. /api)", async () => {
+    process.env.API_URL_INTERNAL = "http://localhost:8000/api";
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(jsonResponse({ data: [] }));
+
+    await djangoFetch("/v1/songs/", { params: { page: 2 } });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("http://localhost:8000/api/v1/songs/?page=2");
   });
 });

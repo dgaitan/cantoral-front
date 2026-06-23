@@ -38,7 +38,10 @@ export interface DjangoFetchOptions {
 }
 
 function buildUrl(path: string, params?: DjangoFetchOptions["params"]): string {
-  const url = new URL(path, baseUrl());
+  // Join base + path so any path prefix on the base (e.g. ".../api") is preserved.
+  // `new URL(path, base)` would drop the prefix for a root-absolute path.
+  const base = (baseUrl() ?? "").replace(/\/$/, "");
+  const url = new URL(`${base}/${path.replace(/^\//, "")}`);
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null) url.searchParams.set(key, String(value));
