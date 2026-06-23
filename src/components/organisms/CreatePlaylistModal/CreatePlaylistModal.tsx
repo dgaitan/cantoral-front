@@ -1,15 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { X } from "lucide-react";
 import {
-  ModalRoot,
-  ModalBackdrop,
-  ModalContainer,
-  ModalDialog,
-  ModalHeader,
-  ModalHeading,
-  ModalBody,
-  ModalCloseTrigger,
+  Modal,
   useOverlayState,
 } from "@heroui/react";
 import { CreatePlaylistForm } from "@/components/organisms/CreatePlaylistForm/CreatePlaylistForm";
@@ -22,7 +16,9 @@ interface CreatePlaylistModalProps {
 }
 
 export function CreatePlaylistModal({ isOpen, onOpenChange, onSuccess }: CreatePlaylistModalProps) {
-  const state = useOverlayState({ isOpen, onOpenChange });
+  // const state = useOverlayState({ isOpen, onOpenChange });
+  const state = useOverlayState();
+  
 
   function handleSuccess(playlist: Playlist) {
     onOpenChange(false);
@@ -30,31 +26,30 @@ export function CreatePlaylistModal({ isOpen, onOpenChange, onSuccess }: CreateP
   }
 
   return (
-    <ModalRoot state={state}>
-      <ModalBackdrop isDismissable />
-      <ModalContainer size="lg">
-        <ModalDialog>
-          <ModalHeader className="flex items-start justify-between px-6 pt-6 pb-0">
+    <Modal.Backdrop isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal.Container size="lg">
+        <Modal.Dialog>
+          <Modal.Header className="flex items-start justify-between  pt-6 pb-0">
             <div>
-              <ModalHeading className="font-serif text-[22px] font-semibold text-ink">
+              <Modal.Heading className="font-serif text-[22px] font-semibold text-ink">
                 Nueva lista
-              </ModalHeading>
+              </Modal.Heading>
               <p className="text-[13px] text-muted mt-0.5">
                 Organiza cantos para una celebración o momento.
               </p>
             </div>
-            <ModalCloseTrigger
+            <Modal.CloseTrigger
               aria-label="Cerrar"
               className="-mt-1 flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-paper-2 hover:text-ink"
             >
               <X size={18} aria-hidden="true" />
-            </ModalCloseTrigger>
-          </ModalHeader>
-          <ModalBody className="px-6 pb-6 pt-5">
+            </Modal.CloseTrigger>
+          </Modal.Header>
+          <Modal.Body className="pt-5">
             <CreatePlaylistForm onSuccess={handleSuccess} onCancel={() => onOpenChange(false)} />
-          </ModalBody>
-        </ModalDialog>
-      </ModalContainer>
-    </ModalRoot>
+          </Modal.Body>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   );
 }
