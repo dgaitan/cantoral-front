@@ -43,7 +43,6 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
   const baseKey = song.tone ?? "";
   const displayKey = baseKey ? transposeKey(baseKey, steps) : "";
   const categoryName = song.tags?.[0]?.name;
-  const categoryId = song.tags?.[0]?.id;
 
   return (
     <div className="bg-[var(--paper)] min-h-screen">
