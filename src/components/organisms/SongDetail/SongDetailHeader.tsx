@@ -1,4 +1,5 @@
 import { CoverArt } from "@/components/atoms/CoverArt/CoverArt";
+import { Heading } from "@/components/atoms/Heading/Heading";
 import type { SongDetailHeaderProps } from "@/types/song";
 
 export function SongDetailHeader({ song }: SongDetailHeaderProps) {
@@ -28,9 +29,7 @@ export function SongDetailHeader({ song }: SongDetailHeaderProps) {
             {categoryName}
           </div>
         )}
-        <h1 className="font-serif text-2xl lg:text-[26px] font-semibold text-ink leading-[1.15] mt-0 mb-[6px]">
-          {song.name}
-        </h1>
+        <Heading className="leading-[1.15] mt-0 mb-[6px]">{song.name}</Heading>
         {authorName && (
           <p
             data-testid="song-author"

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { Heading } from "@/components/atoms/Heading/Heading";
 import type { Category } from "@/types";
 
 interface LiturgyMomentsProps {
@@ -12,9 +13,9 @@ export function LiturgyMoments({ categories }: LiturgyMomentsProps) {
       <p className="font-sans text-[11.5px] font-bold tracking-[0.18em] uppercase text-muted mb-1 lg:mb-4">
         Explora por momento
       </p>
-      <h2 className="hidden lg:block font-serif text-[24px] font-semibold text-ink mb-5 mt-0">
+      <Heading as="h2" size="sm" className="hidden lg:block mb-5 mt-0">
         Momentos de la Misa
-      </h2>
+      </Heading>
 
       {/* Mobile: vertical list */}
       <div className="lg:hidden">

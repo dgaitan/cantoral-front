@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Heading } from "@/components/atoms/Heading/Heading";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { HomeHeroFeatured } from "./HomeHeroFeatured";
 
@@ -39,11 +40,11 @@ export function HomeHero() {
               Biblioteca de Música Católica
             </p>
 
-            <h1 className="font-serif text-[32px] lg:text-[44px] font-semibold leading-[1.1] text-cream tracking-[-0.02em] mb-4">
+            <Heading size="xl" tone="cream" className="leading-[1.1] tracking-[-0.02em] mb-4">
               ¿Qué cantamos
               <br />
               <em className="not-italic text-gold">hoy</em>?
-            </h1>
+            </Heading>
 
             {/* Desktop subtitle */}
             <p className="hidden lg:block font-sans text-[15px] text-cream/60 mb-7 leading-[1.6] m-0">

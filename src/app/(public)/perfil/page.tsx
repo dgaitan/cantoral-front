@@ -6,6 +6,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { SongBrowser } from "@/components/organisms/SongBrowser/SongBrowser";
 import { PageLoader } from "@/components/atoms/PageLoader/PageLoader";
 import { Container } from "@/components/templates/Grid/Container";
+import { Heading } from "@/components/atoms/Heading/Heading";
 
 export default function PerfilPage() {
   const { user, isLoading } = useAuth();
@@ -16,9 +17,9 @@ export default function PerfilPage() {
     <div className="bg-paper min-h-screen">
       <div className="px-5 pt-8 pb-6 border-b border-line">
         <Container>
-          <p className="font-serif text-[22px] font-semibold text-ink leading-tight">
+          <Heading as="p" size="sm">
             {user.name}
-          </p>
+          </Heading>
           <p className="text-[14px] text-muted mt-1">{user.email}</p>
         </Container>
       </div>

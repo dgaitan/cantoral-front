@@ -63,9 +63,9 @@ export function getFavorites(query: SongsQuery = {}): Promise<PaginatedResponse<
   });
 }
 
-export function getPlaylists(page = 1): Promise<PaginatedResponse<Playlist>> {
+export function getPlaylists(page = 1, search?: string): Promise<PaginatedResponse<Playlist>> {
   return djangoFetch<PaginatedResponse<Playlist>>("/v1/playlists/", {
-    params: { page },
+    params: { page, search },
     optionalAuth: true,
   });
 }

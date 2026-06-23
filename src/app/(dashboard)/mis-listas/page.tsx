@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@heroui/react";
+import { Heading } from "@/components/atoms/Heading/Heading";
 import { PlaylistCard } from "@/components/molecules/PlaylistCard/PlaylistCard";
 import { PlaylistDialog } from "@/components/organisms/PlaylistDialog/PlaylistDialog";
 import { usePlaylists } from "@/hooks/usePlaylists";
@@ -22,7 +23,7 @@ export default function MisListasPage() {
   return (
     <div className="px-5 pt-5 pb-28 min-h-screen bg-paper">
       <div className="flex items-center justify-between mb-5">
-        <h1 className="font-serif text-[26px] font-semibold text-ink">Mis listas</h1>
+        <Heading>Mis listas</Heading>
         <Button
           isIconOnly
           onPress={() => setCreateOpen(true)}

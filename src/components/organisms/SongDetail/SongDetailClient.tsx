@@ -6,6 +6,7 @@ import useSWR from "swr";
 import { useSongs } from "@/hooks/useSongs";
 import { fetcher } from "@/lib/api/fetcher";
 import { useAuth } from "@/hooks/useAuth";
+import { Heading } from "@/components/atoms/Heading/Heading";
 import { ChordControls } from "@/components/organisms/ChordControls/ChordControls";
 import { SongLyricsRenderer } from "@/components/organisms/SongLyricsRenderer/SongLyricsRenderer";
 import { transposeKey } from "@/lib/lyrics/transpose-spanish";
@@ -89,9 +90,9 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
 
           {/* Col 2 — lyrics */}
           <div className="min-w-0">
-            <h2 className="hidden lg:block font-serif text-[20px] font-semibold text-ink mb-5 mt-0">
+            <Heading as="h2" size="sm" className="hidden lg:block mb-5 mt-0">
               Letra y acordes
-            </h2>
+            </Heading>
 
             <div className="mb-8">
               {song.lyrics ? (

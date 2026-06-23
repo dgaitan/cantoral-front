@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, GripVertical, Plus, Music, User, Trash2 } from "lucide-react";
 import { Button } from "@heroui/react";
+import { Heading } from "@/components/atoms/Heading/Heading";
 import { PlaylistCoverArt } from "@/components/atoms/PlaylistCoverArt/PlaylistCoverArt";
 import { PlaylistSongList } from "./PlaylistSongList";
 import { AddSongsDialog } from "@/components/organisms/AddSongsDialog/AddSongsDialog";
@@ -47,9 +48,9 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
               </span>
             )}
 
-            <h1 className="font-serif text-[28px] lg:text-[36px] font-semibold text-cream leading-tight">
+            <Heading size="lg" tone="cream">
               {playlist.name}
-            </h1>
+            </Heading>
 
             {playlist.description && (
               <p className="text-[14px] text-cream/70 mt-2 leading-relaxed">
@@ -78,7 +79,7 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
         <div className="bg-white rounded-2xl border border-line px-5 pt-5 pb-2">
           <div className="flex items-center justify-between mb-1">
             <div>
-              <h2 className="font-serif text-[20px] font-semibold text-ink">Canciones</h2>
+              <Heading as="h2" size="sm">Canciones</Heading>
               {canManage && (
                 <p className="text-[12px] text-muted flex items-center gap-1 mt-0.5">
                   <GripVertical size={12} aria-hidden="true" />
