@@ -34,7 +34,7 @@ interface SortableRowProps {
 
 function SortableRow({ item, index, canManage, onRemove }: SortableRowProps) {
   const { setNodeRef, setActivatorNodeRef, listeners, transform, transition, isDragging } =
-    useSortable({ id: item.song.id, disabled: !canManage });
+    useSortable({ id: String(item.song.id), disabled: !canManage });
 
   return (
     <div
@@ -66,7 +66,7 @@ export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: Play
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
@@ -78,8 +78,9 @@ export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: Play
     setActiveId(null);
     if (!over || active.id === over.id) return;
 
-    const oldIndex = songs.findIndex((s) => s.song.id === String(active.id));
-    const newIndex = songs.findIndex((s) => s.song.id === String(over.id));
+    const oldIndex = songs.findIndex((s) => String(s.song.id) === String(active.id));
+    const newIndex = songs.findIndex((s) => String(s.song.id) === String(over.id));
+    if (oldIndex === -1 || newIndex === -1) return;
     const reordered = arrayMove(songs, oldIndex, newIndex);
 
     const optimistic = data
@@ -108,7 +109,7 @@ export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: Play
     );
   }
 
-  const activeItem = activeId ? songs.find((s) => s.song.id === activeId) : null;
+  const activeItem = activeId ? songs.find((s) => String(s.song.id) === activeId) : null;
 
   return (
     <DndContext
@@ -117,7 +118,7 @@ export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: Play
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={songs.map((s) => s.song.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext items={songs.map((s) => String(s.song.id))} strategy={verticalListSortingStrategy}>
         {songs.map((item, index) => (
           <SortableRow
             key={item.song.id}
@@ -133,7 +134,7 @@ export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: Play
         {activeItem && (
           <PlaylistSongRow
             song={activeItem.song}
-            order={songs.findIndex((s) => s.song.id === activeId) + 1}
+            order={songs.findIndex((s) => String(s.song.id) === activeId) + 1}
             isDraggable={false}
             className="bg-white rounded-xl shadow-lg"
           />

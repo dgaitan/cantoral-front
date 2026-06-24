@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { PlaylistSongRow } from "./PlaylistSongRow";
 import type { SongListItem } from "@/types/song";
@@ -39,5 +40,19 @@ describe("Playlists — PlaylistSongRow", () => {
   it("does not render a drag handle when isDraggable is false", () => {
     render(<PlaylistSongRow song={mockSong} order={1} isDraggable={false} />);
     expect(screen.queryByRole("button", { name: /reordenar/i })).not.toBeInTheDocument();
+  });
+
+  it("forwards drag listeners to the handle so dnd-kit can start a drag", () => {
+    const onPointerDown = vi.fn();
+    render(
+      <PlaylistSongRow
+        song={mockSong}
+        order={1}
+        isDraggable
+        dragHandleProps={{ onPointerDown }}
+      />
+    );
+    fireEvent.pointerDown(screen.getByRole("button", { name: /reordenar/i }));
+    expect(onPointerDown).toHaveBeenCalledTimes(1);
   });
 });

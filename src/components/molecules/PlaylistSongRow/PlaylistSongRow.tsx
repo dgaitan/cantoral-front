@@ -31,16 +31,15 @@ export function PlaylistSongRow({
   return (
     <div className={cn("flex items-center gap-2 py-3 border-b border-line last:border-0", className)}>
       {isDraggable ? (
-        <Button
+        <button
+          type="button"
           ref={dragHandleRef as React.Ref<HTMLButtonElement>}
-          {...(dragHandleProps as React.ComponentProps<typeof Button>)}
-          isIconOnly
-          variant="ghost"
+          {...dragHandleProps}
           aria-label="Reordenar canción"
-          className="text-muted hover:text-ink cursor-grab active:cursor-grabbing shrink-0 touch-none min-w-0 w-7 h-7"
+          className="flex items-center justify-center text-muted hover:text-ink cursor-grab active:cursor-grabbing shrink-0 touch-none min-w-0 w-7 h-7 rounded-lg"
         >
           <GripVertical size={16} aria-hidden="true" />
-        </Button>
+        </button>
       ) : (
         <span className="w-7 shrink-0" />
       )}
