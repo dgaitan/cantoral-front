@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSWRConfig } from "swr";
 import { Check, Plus } from "lucide-react";
 import { Button } from "@heroui/react";
 import { CoverArt } from "@/components/atoms/CoverArt/CoverArt";
@@ -18,6 +19,7 @@ export function AddSongsContent({ playlistUuid, initialSongIds = [] }: AddSongsC
   const [search, setSearch] = useState("");
   const [addedIds, setAddedIds] = useState<Set<number>>(new Set(initialSongIds));
   const [pendingId, setPendingId] = useState<number | null>(null);
+  const { mutate } = useSWRConfig();
 
   const { data, isLoading } = useSongs({ search: search || undefined });
   const songs: SongListItem[] = data?.data?.results ?? [];
@@ -36,6 +38,8 @@ export function AddSongsContent({ playlistUuid, initialSongIds = [] }: AddSongsC
         }
         return next;
       });
+      // Invalidate means that it will refetch the playlist songs and the songs will be updated in the UI
+      mutate((key) => Array.isArray(key) && key[0] === "playlist-songs" && key[1] === playlistUuid);
     } finally {
       setPendingId(null);
     }

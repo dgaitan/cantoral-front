@@ -10,6 +10,7 @@ import { PlaylistSongList } from "./PlaylistSongList";
 import { AddSongsDialog } from "@/components/organisms/AddSongsDialog/AddSongsDialog";
 import { deletePlaylist } from "@/actions/playlists";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlaylistSongs } from "@/hooks/usePlaylistSongs";
 import type { Playlist, PlaylistSong } from "@/types/playlist";
 
 interface PlaylistDetailProps {
@@ -21,11 +22,13 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
   const [addSongsOpen, setAddSongsOpen] = useState(false);
   const router = useRouter();
   const { user } = useAuth();
+  const { data } = usePlaylistSongs(playlist.uuid, initialSongs);
+  const songs = data?.data?.results ?? initialSongs;
 
   const isOwner = !!user && Number(user.id) === playlist.owner_id;
   const canManage = isOwner || playlist.is_collaborative;
 
-  const tones = [...new Set(initialSongs.map((s) => s.song.tone).filter(Boolean))];
+  const tones = [...new Set(songs.map((s) => s.song.tone).filter(Boolean))];
 
   async function handleDelete() {
     if (!confirm("¿Eliminar esta lista? Esta acción no se puede deshacer.")) return;
@@ -61,7 +64,7 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
             <div className="flex flex-wrap gap-x-5 gap-y-1 mt-4 text-[13px] text-cream/60">
               <span className="flex items-center gap-1.5">
                 <Music size={13} aria-hidden="true" />
-                {initialSongs.length} canciones
+                {songs.length} canciones
               </span>
               {tones.length > 0 && (
                 <span className="flex items-center gap-1.5">
@@ -118,7 +121,7 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
             canManage={canManage}
           />
 
-          {initialSongs.length === 0 && (
+          {songs.length === 0 && (
             <p className="text-center text-muted text-[14px] py-8">
               Esta lista aún no tiene canciones.
             </p>

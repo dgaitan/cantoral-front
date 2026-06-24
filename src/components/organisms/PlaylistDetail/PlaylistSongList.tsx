@@ -22,6 +22,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { PlaylistSongRow } from "@/components/molecules/PlaylistSongRow/PlaylistSongRow";
 import { reorderSongs, attachSongs } from "@/actions/playlists";
+import { usePlaylistSongs } from "@/hooks/usePlaylistSongs";
 import type { PlaylistSong } from "@/types/playlist";
 
 interface SortableRowProps {
@@ -60,7 +61,8 @@ interface PlaylistSongListProps {
 }
 
 export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: PlaylistSongListProps) {
-  const [songs, setSongs] = useState(initialSongs);
+  const { data, mutate } = usePlaylistSongs(playlistUuid, initialSongs);
+  const songs = data?.data?.results ?? initialSongs;
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
@@ -79,17 +81,31 @@ export function PlaylistSongList({ playlistUuid, initialSongs, canManage }: Play
     const oldIndex = songs.findIndex((s) => s.song.id === String(active.id));
     const newIndex = songs.findIndex((s) => s.song.id === String(over.id));
     const reordered = arrayMove(songs, oldIndex, newIndex);
-    setSongs(reordered);
 
-    await reorderSongs(
-      playlistUuid,
-      reordered.map((s) => Number(s.song.id))
+    const optimistic = data
+      ? { ...data, data: { ...data.data, results: reordered } }
+      : undefined;
+    await mutate(
+      async () => {
+        await reorderSongs(playlistUuid, reordered.map((s) => Number(s.song.id)));
+        return optimistic;
+      },
+      { optimisticData: optimistic, rollbackOnError: true, revalidate: false }
     );
   }
 
   async function handleRemove(songId: number) {
-    await attachSongs(playlistUuid, [songId]);
-    setSongs((prev) => prev.filter((s) => Number(s.song.id) !== songId));
+    const remaining = songs.filter((s) => Number(s.song.id) !== songId);
+    const optimistic = data
+      ? { ...data, data: { ...data.data, results: remaining, count: remaining.length } }
+      : undefined;
+    await mutate(
+      async () => {
+        await attachSongs(playlistUuid, [songId]);
+        return optimistic;
+      },
+      { optimisticData: optimistic, rollbackOnError: true, revalidate: false }
+    );
   }
 
   const activeItem = activeId ? songs.find((s) => s.song.id === activeId) : null;
