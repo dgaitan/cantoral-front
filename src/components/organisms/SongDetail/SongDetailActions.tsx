@@ -10,7 +10,8 @@ export function SongDetailActions({ presentacionHref }: SongDetailActionsProps) 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-1 gap-[10px] mb-5 lg:flex-col lg:gap-3">
       <Button
-        className="bg-ink text-cream font-semibold"
+        variant="secondary"
+        className="font-semibold"
         fullWidth
         onPress={() => router.push(presentacionHref)}
       >

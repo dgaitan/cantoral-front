@@ -35,8 +35,9 @@ export function MagicLinkForm({ onSubmit, loading = false }: MagicLinkFormProps)
       </TextField>
       <Button
         type="submit"
+        variant="primary"
         isDisabled={loading}
-        className="w-full font-semibold bg-orange text-white"
+        className="w-full font-semibold"
       >
         {loading ? "Enviando…" : "Enviar enlace"}
       </Button>

@@ -85,14 +85,11 @@ export function AddSongsContent({ playlistUuid, initialSongIds = [] }: AddSongsC
 
               <Button
                 size="sm"
+                variant={isAdded ? "secondary" : "primary"}
                 isDisabled={isPending}
                 onPress={() => toggle(song)}
                 aria-label={isAdded ? `Quitar ${song.name}` : `Añadir ${song.name}`}
-                className={
-                  isAdded
-                    ? "text-[12.5px] font-semibold bg-paper-2 text-ink min-w-[80px]"
-                    : "text-[12.5px] font-semibold bg-ink text-cream min-w-[80px]"
-                }
+                className="text-[12.5px] font-semibold min-w-[80px]"
               >
                 {isAdded
                   ? <><Check size={13} aria-hidden="true" /> {isPending ? "…" : "Añadida"}</>

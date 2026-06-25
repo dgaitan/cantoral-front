@@ -89,7 +89,7 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
                 </Link>
                 <Link
                   href={APP_URLS.REGISTER}
-                  className="font-sans text-[13.5px] font-semibold px-4 py-[9px] rounded-[12px] no-underline bg-orange text-white hover:opacity-90 transition-opacity"
+                  className="button button--primary button--sm font-sans text-[13.5px] font-semibold no-underline"
                 >
                   Crear cuenta
                 </Link>

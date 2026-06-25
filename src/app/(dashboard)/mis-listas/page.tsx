@@ -26,9 +26,10 @@ export default function MisListasPage() {
         <Heading>Mis listas</Heading>
         <Button
           isIconOnly
+          variant="primary"
           onPress={() => setCreateOpen(true)}
           aria-label="Nueva lista"
-          className="w-10 h-10 min-w-10 rounded-xl bg-orange text-white"
+          className="w-10 h-10 min-w-10 rounded-xl"
         >
           <Plus size={20} aria-hidden="true" />
         </Button>
@@ -42,8 +43,9 @@ export default function MisListasPage() {
         <div className="text-center py-10">
           <p className="text-muted mb-4">Aún no tienes listas creadas</p>
           <Button
+            variant="primary"
             onPress={() => setCreateOpen(true)}
-            className="bg-orange text-white font-semibold"
+            className="font-semibold"
           >
             <Plus size={16} aria-hidden="true" />
             {" "}Crear lista

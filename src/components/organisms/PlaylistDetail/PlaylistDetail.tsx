@@ -94,8 +94,9 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
             <div className="flex items-center gap-2">
               {canManage && (
                 <Button
+                  variant="secondary"
                   onPress={() => setAddSongsOpen(true)}
-                  className="font-semibold bg-ink text-cream text-[13px]"
+                  className="font-semibold text-[13px]"
                 >
                   <Plus size={15} aria-hidden="true" />
                   {" "}Agregar canciones

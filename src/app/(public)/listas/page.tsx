@@ -35,8 +35,9 @@ export default function ListasPage() {
 
         {isAuthenticated && (
           <Button
+            variant="primary"
             onPress={() => setCreateOpen(true)}
-            className="font-bold bg-orange text-white shrink-0 mt-1"
+            className="font-bold shrink-0 mt-1"
           >
             <Plus size={16} aria-hidden="true" />
             {" "}Nueva lista

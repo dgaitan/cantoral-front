@@ -54,7 +54,7 @@ export function HomeSections() {
           <p className="font-sans text-muted mb-4">Explora el catálogo de canciones</p>
           <Link
             href="/explorar"
-            className="inline-block bg-orange text-white font-semibold rounded-[13px] px-5 py-3 no-underline"
+            className="button button--primary font-semibold no-underline"
           >
             Ver canciones
           </Link>

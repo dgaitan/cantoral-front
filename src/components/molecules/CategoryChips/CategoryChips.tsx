@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@heroui/react";
-import { cn } from "@/lib/utils/cn";
 import type { Category } from "@/types/song";
 
 interface CategoryChipsProps {
@@ -25,14 +24,9 @@ export function CategoryChips({
           <Button
             key={c.id}
             size="sm"
-            variant="ghost"
+            variant={active ? "secondary" : "ghost"}
             onPress={() => onChange(c.id as string | "all")}
-            className={cn(
-              "shrink-0 rounded-full text-[13.5px] font-semibold px-3.5 border transition-all duration-150",
-              active
-                ? "bg-ink text-white border-ink hover:bg-ink/90"
-                : "bg-white text-ink border-line hover:bg-paper-2"
-            )}
+            className="shrink-0 rounded-full text-[13.5px] font-semibold px-3.5"
           >
             {c.name}
           </Button>

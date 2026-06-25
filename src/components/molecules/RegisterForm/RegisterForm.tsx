@@ -73,8 +73,9 @@ export function RegisterForm({ onSubmit, loading = false }: Props) {
 
       <Button
         type="submit"
+        variant="primary"
         isDisabled={loading}
-        className="w-full font-bold bg-orange text-white"
+        className="w-full font-bold"
       >
         {loading ? "Enviando…" : "Crear cuenta"}
       </Button>

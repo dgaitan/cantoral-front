@@ -15,6 +15,28 @@
 
   --background: var(--paper);
   --foreground: var(--ink);
+
+  /* Brand-bind HeroUI's semantic button tokens. Unlayered, so these win over
+     HeroUI's @layer theme defaults. primary = orange via --accent. */
+  --accent:            var(--orange);
+  --accent-foreground: var(--paper);
+}
+
+/* secondary (navy) and tertiary (gold) need distinct colors, but stock HeroUI
+   maps both variants to the single --default token. Override the variant
+   classes directly (unlayered → beats HeroUI's @layer components). */
+.button--secondary {
+  --button-bg:         var(--ink);
+  --button-bg-hover:   var(--ink-700);
+  --button-bg-pressed: var(--ink-700);
+  --button-fg:         var(--cream);
+}
+
+.button--tertiary {
+  --button-bg:         var(--gold);
+  --button-bg-hover:   color-mix(in oklab, var(--gold) 88%, black 12%);
+  --button-bg-pressed: color-mix(in oklab, var(--gold) 80%, black 20%);
+  --button-fg:         var(--ink);
 }
 
 @theme inline {

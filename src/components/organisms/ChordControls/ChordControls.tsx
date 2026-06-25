@@ -2,7 +2,6 @@
 
 import { Minus, Plus, Music } from "lucide-react";
 import { Button } from "@heroui/react";
-import { cn } from "@/lib/utils/cn";
 import { transposeKey } from "@/lib/lyrics/transpose-spanish";
 
 interface ChordControlsProps {
@@ -36,8 +35,9 @@ export function ChordControls({
         <div className="flex-1 lg:w-full flex items-center justify-between bg-paper-2 rounded-[50px] p-[5px]">
           <Button
             isIconOnly
+            variant="outline"
             onPress={() => onStepsChange(steps - 1)}
-            className="w-10 h-[34px] min-w-0  bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
+            className="w-10 h-[34px] min-w-0 shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Bajar tono"
           >
             <Minus size={18} />
@@ -55,8 +55,9 @@ export function ChordControls({
           </div>
           <Button
             isIconOnly
+            variant="outline"
             onPress={() => onStepsChange(steps + 1)}
-            className="w-10 h-[34px] min-w-0 bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
+            className="w-10 h-[34px] min-w-0 shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Subir tono"
           >
             <Plus size={18} />
@@ -72,8 +73,9 @@ export function ChordControls({
         <div className="flex-1 lg:w-full flex items-center justify-between bg-paper-2 rounded-[50px] p-[5px]">
           <Button
             isIconOnly
+            variant="outline"
             onPress={() => onFontSizeChange(Math.max(15, fontSize - 1))}
-            className="w-10 h-[34px] min-w-0 bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
+            className="w-10 h-[34px] min-w-0 shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Reducir texto"
           >
             <span className="font-serif text-sm font-semibold">A</span>
@@ -83,8 +85,9 @@ export function ChordControls({
           </span>
           <Button
             isIconOnly
+            variant="outline"
             onPress={() => onFontSizeChange(Math.min(28, fontSize + 1))}
-            className="w-10 h-[34px] min-w-0 bg-white text-ink shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
+            className="w-10 h-[34px] min-w-0 shadow-[0_1px_2px_rgba(10,29,43,0.08)]"
             aria-label="Aumentar texto"
           >
             <span className="font-serif text-[20px] font-semibold">A</span>
@@ -92,15 +95,11 @@ export function ChordControls({
         </div>
       </div>
       <Button
+        variant={showChords ? "secondary" : "outline"}
         onPress={() => onShowChordsChange(!showChords)}
         aria-pressed={showChords}
         fullWidth
-        className={cn(
-          "flex items-center gap-[7px] px-[13px] py-[9px] font-sans text-[13px] font-semibold shrink-0 h-auto border",
-          showChords
-            ? "bg-ink text-white border-transparent"
-            : "bg-white text-muted border-line"
-        )}
+        className="flex items-center gap-[7px] px-[13px] py-[9px] font-sans text-[13px] font-semibold shrink-0 h-auto"
       >
         <Music size={16} aria-hidden="true" /> Acordes
       </Button>

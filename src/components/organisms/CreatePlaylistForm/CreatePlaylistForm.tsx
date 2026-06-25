@@ -150,8 +150,9 @@ export function CreatePlaylistForm({ onSuccess, onCancel }: CreatePlaylistFormPr
         )}
         <Button
           type="submit"
+          variant="primary"
           isDisabled={isSubmitting}
-          className="flex-1 font-bold bg-orange text-white"
+          className="flex-1 font-bold"
         >
           {isSubmitting ? "Creando…" : "Crear lista"}
         </Button>
