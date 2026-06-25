@@ -5,26 +5,23 @@ import { useRouter } from "next/navigation";
 import { Toast } from "@heroui/react";
 import { AuthCard } from "@/components/organisms/AuthCard/AuthCard";
 import { LoginForm } from "@/components/molecules/LoginForm/LoginForm";
-import { useAuth } from "@/hooks/useAuth";
-import { extractApiError } from "@/lib/utils/api-error";
+import { login } from "@/actions/auth";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(email: string, password: string) {
     setLoading(true);
-    try {
-      await login(email, password);
-      sessionStorage.setItem("cc_pending_email", email);
-      Toast.toast.success("Revisa tu correo para obtener el código de acceso.");
-      router.push("/verify");
-    } catch (error) {
-      Toast.toast.danger(extractApiError(error, "No se pudo iniciar sesión. Intenta nuevamente."));
-    } finally {
-      setLoading(false);
+    const res = await login({ email, password });
+    setLoading(false);
+    if (!res.ok) {
+      Toast.toast.danger(res.error);
+      return;
     }
+    sessionStorage.setItem("cc_pending_email", email);
+    Toast.toast.success("Revisa tu correo para obtener el código de acceso.");
+    router.push("/verify");
   }
 
   return (

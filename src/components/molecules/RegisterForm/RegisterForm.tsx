@@ -2,17 +2,11 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { TextField, InputGroup, FieldError, Button } from "@heroui/react";
 import { User, Mail, Lock } from "lucide-react";
+import { registerSchema, type RegisterInput } from "@/lib/schemas/auth";
 
-const schema = z.object({
-  name: z.string().min(1, "Ingresa tu nombre"),
-  email: z.string().email("Ingresa un correo electrónico válido"),
-  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = RegisterInput;
 
 interface Props {
   onSubmit: (name: string, email: string, password: string) => Promise<void>;
@@ -24,7 +18,7 @@ export function RegisterForm({ onSubmit, loading = false }: Props) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({ resolver: zodResolver(registerSchema) });
 
   return (
     <form
@@ -79,8 +73,9 @@ export function RegisterForm({ onSubmit, loading = false }: Props) {
 
       <Button
         type="submit"
+        variant="primary"
         isDisabled={loading}
-        className="w-full font-bold bg-orange text-white"
+        className="w-full font-bold"
       >
         {loading ? "Enviando…" : "Crear cuenta"}
       </Button>

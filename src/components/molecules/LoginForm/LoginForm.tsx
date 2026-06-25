@@ -2,16 +2,11 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { TextField, InputGroup, FieldError, Button } from "@heroui/react";
 import { Mail, Lock } from "lucide-react";
+import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 
-const schema = z.object({
-  email: z.string().email("Ingresa un correo electrónico válido"),
-  password: z.string().min(1, "Ingresa tu contraseña"),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = LoginInput;
 
 interface Props {
   onSubmit: (email: string, password: string) => Promise<void>;
@@ -23,7 +18,7 @@ export function LoginForm({ onSubmit, loading = false }: Props) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({ resolver: zodResolver(loginSchema) });
 
   return (
     <form
@@ -63,8 +58,9 @@ export function LoginForm({ onSubmit, loading = false }: Props) {
 
       <Button
         type="submit"
+        variant="primary"
         isDisabled={loading}
-        className="w-full font-bold bg-orange text-white"
+        className="w-full font-bold"
       >
         {loading ? "Enviando…" : "Ingresar"}
       </Button>

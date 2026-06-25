@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Heart, Loader2 } from "lucide-react";
 import { Button } from "@heroui/react";
 import { cn } from "@/lib/utils/cn";
-import { getMemoryToken } from "@/lib/api/client";
-import { toggleFavorite } from "@/lib/api/favorites";
+import { useAuth } from "@/hooks/useAuth";
+import { toggleFavorite } from "@/actions/favorites";
 
 interface FavoriteButtonProps {
   songId: string;
@@ -16,20 +16,21 @@ interface FavoriteButtonProps {
 
 export function FavoriteButton({ songId, isFavorited, className }: FavoriteButtonProps) {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   // null = user hasn't interacted yet; prop drives the display
   const [optimisticFavorited, setOptimisticFavorited] = useState<boolean | null>(null);
   const [isPending, setIsPending] = useState(false);
   const favorited = optimisticFavorited !== null ? optimisticFavorited : isFavorited;
 
   async function handlePress() {
-    if (!getMemoryToken()) {
+    if (!isAuthenticated) {
       router.push("/register");
       return;
     }
     setIsPending(true);
     try {
       const res = await toggleFavorite(songId);
-      setOptimisticFavorited(res.data.is_favorite);
+      if (res.ok) setOptimisticFavorited(res.data.is_favorite);
     } finally {
       setIsPending(false);
     }

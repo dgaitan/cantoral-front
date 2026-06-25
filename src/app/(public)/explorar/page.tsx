@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useSongs } from "@/hooks/useSongs";
 import { useCategories } from "@/hooks/useCategories";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Heading } from "@/components/atoms/Heading/Heading";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { CategoryChips } from "@/components/molecules/CategoryChips/CategoryChips";
 import { SongRow } from "@/components/molecules/SongRow/SongRow";
@@ -64,9 +65,7 @@ function ExplorarContent() {
   return (
     <div className="bg-paper min-h-screen">
       <div className="sticky -top-[60px] z-20 bg-paper/95 backdrop-blur-md border-b border-line px-5 pt-4 pb-2 max-w-[1100px] mx-auto lg:px-8">
-        <h1 className="font-serif text-[26px] font-semibold text-ink mb-3.5">
-          Explorar
-        </h1>
+        <Heading className="mb-3.5">Explorar</Heading>
         <SearchBar
           defaultValue={search}
           onSearch={handleSearch}

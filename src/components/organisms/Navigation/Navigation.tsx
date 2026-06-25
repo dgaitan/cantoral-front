@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/atoms/Logo/Logo";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { cn } from "@/lib/utils/cn";
@@ -22,7 +22,7 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
   const pathname = usePathname();
   const router = useRouter();
   const isWhite = logoStyle === "white";
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="absolute top-0 left-0 right-0 z-50">
@@ -89,7 +89,7 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
                 </Link>
                 <Link
                   href={APP_URLS.REGISTER}
-                  className="font-sans text-[13.5px] font-semibold px-4 py-[9px] rounded-[12px] no-underline bg-orange text-white hover:opacity-90 transition-opacity"
+                  className="button button--primary button--sm font-sans text-[13.5px] font-semibold no-underline"
                 >
                   Crear cuenta
                 </Link>

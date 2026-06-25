@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Newsreader, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Toast } from "@heroui/react";
 import { BottomNav } from "@/components/organisms/BottomNav/BottomNav";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -45,9 +46,11 @@ export default function RootLayout({
       className={`light ${newsreader.variable} ${hanken.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Toast.Provider placement="top" />
-        {children}
-        <BottomNav />
+        <AuthProvider>
+          <Toast.Provider placement="top" />
+          {children}
+          <BottomNav />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,37 +1,25 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Tabs } from "@heroui/react";
-import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
 import { SongBrowser } from "@/components/organisms/SongBrowser/SongBrowser";
 import { PageLoader } from "@/components/atoms/PageLoader/PageLoader";
-import APP_URLS from "@/lib/constants";
 import { Container } from "@/components/templates/Grid/Container";
+import { Heading } from "@/components/atoms/Heading/Heading";
 
 export default function PerfilPage() {
-  const user = useAuthStore((s) => s.user);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
-  const router = useRouter();
+  const { user, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (hasHydrated && !isAuthenticated) {
-      router.replace(APP_URLS.LOGIN);
-    }
-  }, [hasHydrated, isAuthenticated, router]);
-
-  if (!hasHydrated) return <PageLoader />;
-  if (!user) return null;
+  if (isLoading || !user) return <PageLoader />;
 
   return (
     <div className="bg-paper min-h-screen">
       <div className="px-5 pt-8 pb-6 border-b border-line">
         <Container>
-          <p className="font-serif text-[22px] font-semibold text-ink leading-tight">
+          <Heading as="p" size="sm">
             {user.name}
-          </p>
+          </Heading>
           <p className="text-[14px] text-muted mt-1">{user.email}</p>
         </Container>
       </div>

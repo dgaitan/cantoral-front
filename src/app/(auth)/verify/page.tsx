@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { Toast, InputOTP } from "@heroui/react";
 import { AuthCard } from "@/components/organisms/AuthCard/AuthCard";
 import { useAuth } from "@/hooks/useAuth";
-import { extractApiError } from "@/lib/utils/api-error";
+import { verifyOtp } from "@/actions/auth";
 
 export default function VerifyPage() {
   const router = useRouter();
-  const { verifyToken } = useAuth();
+  const { refresh } = useAuth();
   const [email] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return sessionStorage.getItem("cc_pending_email");
@@ -24,18 +24,16 @@ export default function VerifyPage() {
   async function handleComplete(code: string) {
     if (!email || loading) return;
     setLoading(true);
-    try {
-      await verifyToken(email, code);
-      sessionStorage.removeItem("cc_pending_email");
-      router.push("/perfil");
-    } catch (error) {
-      Toast.toast.danger(
-        extractApiError(error, "Código inválido o expirado. Intenta nuevamente.")
-      );
+    const res = await verifyOtp({ email, token: code });
+    if (!res.ok) {
+      Toast.toast.danger(res.error);
       setOtp("");
-    } finally {
       setLoading(false);
+      return;
     }
+    sessionStorage.removeItem("cc_pending_email");
+    await refresh();
+    router.push("/perfil");
   }
 
   if (!email) return null;

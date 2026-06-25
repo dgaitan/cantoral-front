@@ -1,9 +1,9 @@
 "use client";
 
-import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
+  const { user } = useAuth();
 
   return (
     <div>

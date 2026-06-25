@@ -1,50 +1,19 @@
 "use client";
 
-import { useAuthStore } from "@/store/authStore";
-import {
-  loginWithPassword,
-  registerUser,
-  verifyOtp,
-  logoutUser,
-  fetchCurrentUser,
-} from "@/lib/api/auth";
-import { setMemoryToken, setRefreshToken } from "@/lib/auth/token";
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/components/providers/AuthProvider";
+import { logout as logoutAction } from "@/actions/auth";
 
 export function useAuth() {
-  const { user, isAuthenticated, setUser, clearAuth, setIsAuthenticated } = useAuthStore();
-
-  async function login(email: string, password: string): Promise<void> {
-    await loginWithPassword(email, password);
-  }
-
-  async function register(name: string, email: string, password: string): Promise<void> {
-    await registerUser(name, email, password);
-  }
-
-  async function verifyToken(email: string, token: string): Promise<void> {
-    const authResponse = await verifyOtp(email, token);
-    if (!authResponse.success || !authResponse.data) {
-      throw new Error("Verificación fallida");
-    }
-
-    const { access_token, refresh_token } = authResponse.data;
-
-    setMemoryToken(access_token);
-    setRefreshToken(refresh_token);
-    setIsAuthenticated(true);
-
-    const userResponse = await fetchCurrentUser();
-    if (userResponse.success && userResponse.data) {
-      setUser(userResponse.data);
-    }
-  }
+  const { user, isAuthenticated, isLoading, refresh } = useAuthContext();
+  const router = useRouter();
 
   async function logout(): Promise<void> {
-    await logoutUser();
-    setMemoryToken(null);
-    setRefreshToken(null);
-    clearAuth();
+    await logoutAction();
+    await refresh();
+    router.push("/");
+    router.refresh();
   }
 
-  return { user, isAuthenticated, login, register, verifyToken, logout };
+  return { user, isAuthenticated, isLoading, refresh, logout };
 }

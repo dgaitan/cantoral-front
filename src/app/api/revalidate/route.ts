@@ -13,6 +13,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const tag = `song-${body.songId}`;
-  revalidateTag(tag);
+  revalidateTag(tag, "max");
   return NextResponse.json({ revalidated: true, tag });
 }

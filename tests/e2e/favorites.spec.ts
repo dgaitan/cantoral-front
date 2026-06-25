@@ -3,12 +3,48 @@ import { test, expect, type Page } from "@playwright/test";
 const BACKEND = "http://localhost:8000/api";
 
 async function seedAuthState(page: Page) {
+  // Set the httpOnly session cookie so the proxy middleware grants access to /perfil.
+  // Value is base64url-encoded JSON matching the format written by buildSetCookieHeader.
+  const sessionPayload = Buffer.from(
+    JSON.stringify({ refreshToken: "mock-refresh-token" })
+  ).toString("base64url");
+
+  await page.context().addCookies([
+    {
+      name: "cc_session",
+      value: sessionPayload,
+      domain: "localhost",
+      path: "/",
+      httpOnly: true,
+      sameSite: "Lax",
+    },
+  ]);
+
+  // Populate Zustand auth store so perfil/page.tsx renders user data immediately.
   await page.addInitScript(() => {
-    const user = { id: "1", email: "david@example.com", name: "David", can_create_songs: false, can_publish_songs: false, can_create_playlists: true, is_admin: false };
-    localStorage.setItem("cc-auth", JSON.stringify({ state: { user, isAuthenticated: true }, version: 0 }));
-    localStorage.setItem("cc_access_token", "mock-access-token");
-    localStorage.setItem("cc_refresh_token", "mock-refresh-token");
+    const user = {
+      id: "1",
+      email: "david@example.com",
+      name: "David",
+      can_create_songs: false,
+      can_publish_songs: false,
+      can_create_playlists: true,
+    };
+    localStorage.setItem(
+      "cc-auth",
+      JSON.stringify({ state: { user, isAuthenticated: true }, version: 0 })
+    );
   });
+
+  // Intercept the BFF refresh route so the Axios client can acquire a memory token
+  // on the first 401, enabling authenticated requests to the favorites API.
+  await page.route("/api/auth/refresh", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ access: "mock-access-token" }),
+    })
+  );
 }
 
 async function mockFavoritesEmpty(page: Page) {
@@ -16,7 +52,12 @@ async function mockFavoritesEmpty(page: Page) {
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ success: true, data: { results: [], count: 0, next: null, previous: null }, errors: null, status: 200 }),
+      body: JSON.stringify({
+        success: true,
+        data: { results: [], count: 0, next: null, previous: null },
+        errors: null,
+        status: 200,
+      }),
     })
   );
 }
@@ -30,7 +71,12 @@ async function mockFavoritesWithSongs(page: Page) {
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ success: true, data: { results: songs, count: 2, next: null, previous: null }, errors: null, status: 200 }),
+      body: JSON.stringify({
+        success: true,
+        data: { results: songs, count: 2, next: null, previous: null },
+        errors: null,
+        status: 200,
+      }),
     })
   );
 }
@@ -42,11 +88,18 @@ async function mockFavoritesSearchMatch(page: Page) {
   await page.route(`${BACKEND}/v1/profile/favorites/**`, (route) => {
     const url = new URL(route.request().url());
     const search = url.searchParams.get("search");
-    const results = search ? songs.filter((s) => s.name.toLowerCase().includes(search.toLowerCase())) : songs;
+    const results = search
+      ? songs.filter((s) => s.name.toLowerCase().includes(search.toLowerCase()))
+      : songs;
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ success: true, data: { results, count: results.length, next: null, previous: null }, errors: null, status: 200 }),
+      body: JSON.stringify({
+        success: true,
+        data: { results, count: results.length, next: null, previous: null },
+        errors: null,
+        status: 200,
+      }),
     });
   });
 }
@@ -73,7 +126,10 @@ test.describe("Song Favorites — /perfil page", () => {
     await seedAuthState(page);
     await mockFavoritesEmpty(page);
     await page.goto("/perfil");
-    await expect(page.getByRole("tab", { name: "Favoritos" })).toHaveAttribute("data-selected", "true");
+    await expect(page.getByRole("tab", { name: "Favoritos" })).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
   });
 
   test("lists favorite songs with a search bar visible", async ({ page }) => {
@@ -108,7 +164,12 @@ test.describe("Song Favorites — /perfil page", () => {
       route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({ success: true, data: { results: [], count: 0, next: null, previous: null }, errors: null, status: 200 }),
+        body: JSON.stringify({
+          success: true,
+          data: { results: [], count: 0, next: null, previous: null },
+          errors: null,
+          status: 200,
+        }),
       })
     );
     await page.goto("/perfil");
