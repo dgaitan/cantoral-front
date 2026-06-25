@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { SongDetailClient } from "@/components/organisms/SongDetail/SongDetailClient";
 import { parseSongParam, buildSongParam } from "@/lib/utils/song-param";
 import { lyricsToPlainText } from "@/lib/lyrics/parser";
-import { buildSongJsonLd } from "@/lib/utils/seo";
+import { buildSongJsonLd, jsonLdHtml } from "@/lib/utils/seo";
 import type { DjangoResponse, Song } from "@/types";
 
 export const revalidate = 3600;
@@ -71,7 +71,7 @@ export default async function SongPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
       />
       <SongDetailClient song={song} presentacionHref={presentacionHref} />
     </>

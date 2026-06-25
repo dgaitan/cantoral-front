@@ -15,12 +15,17 @@ export function HomeSections() {
 
   return (
     <div className="max-w-[1100px] mx-auto lg:px-8">
-      {categories.length > 0 && <LiturgyMoments categories={categories} />}
+      {categories.length > 0 && (
+        <section aria-label="Momentos de la liturgia">
+          <LiturgyMoments categories={categories} />
+        </section>
+      )}
 
       {rail.length > 0 && (
-        <div className="pt-[18px] pb-2">
+        <section aria-labelledby="home-mas-buscadas" className="pt-[18px] pb-2">
           <div className="px-5 lg:px-0">
             <SectionHead
+              headingId="home-mas-buscadas"
               kicker="Para tu liturgia"
               title="Más buscadas"
               action="Ver todo"
@@ -32,12 +37,12 @@ export function HomeSections() {
               <SongCard key={song.id} song={song} width={150} />
             ))}
           </div>
-        </div>
+        </section>
       )}
 
       {recientes.length > 0 && (
-        <div className="px-5 lg:px-0 pt-[14px]">
-          <SectionHead kicker="Catálogo" title="Recién agregadas" />
+        <section aria-labelledby="home-recientes" className="px-5 lg:px-0 pt-[14px]">
+          <SectionHead headingId="home-recientes" kicker="Catálogo" title="Recién agregadas" />
           {recientes.map((song, i) => (
             <SongRow
               key={song.id}
@@ -46,7 +51,7 @@ export function HomeSections() {
               href={`/canciones/${buildSongParam(song.id, song.slug)}`}
             />
           ))}
-        </div>
+        </section>
       )}
 
       {songs.length === 0 && (

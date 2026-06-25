@@ -19,10 +19,12 @@ export function Heading({
   size = "md",
   tone = "ink",
   eyebrow,
+  id,
   className,
 }: HeadingProps) {
   const heading = (
     <Tag
+      id={id}
       className={cn(
         "font-serif font-semibold leading-tight tracking-[-0.01em]",
         SIZES[size],

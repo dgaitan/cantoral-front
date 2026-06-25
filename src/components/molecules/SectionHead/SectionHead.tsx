@@ -6,9 +6,11 @@ interface SectionHeadProps {
   kicker?: string;
   action?: string;
   actionHref?: string;
+  /** Optional id for the <h2>, so a wrapping <section aria-labelledby> can reference it. */
+  headingId?: string;
 }
 
-export function SectionHead({ title, kicker, action, actionHref }: SectionHeadProps) {
+export function SectionHead({ title, kicker, action, actionHref, headingId }: SectionHeadProps) {
   return (
     <div className="flex items-end justify-between mb-[14px]">
       <div>
@@ -17,7 +19,7 @@ export function SectionHead({ title, kicker, action, actionHref }: SectionHeadPr
             {kicker}
           </div>
         )}
-        <h2 className="font-[family-name:var(--font-newsreader)] text-[22px] font-semibold text-[var(--ink)] m-0 tracking-[-0.01em] whitespace-nowrap">
+        <h2 id={headingId} className="font-[family-name:var(--font-newsreader)] text-[22px] font-semibold text-[var(--ink)] m-0 tracking-[-0.01em] whitespace-nowrap">
           {title}
         </h2>
       </div>

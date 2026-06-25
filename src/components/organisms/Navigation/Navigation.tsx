@@ -43,6 +43,7 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
                 <Link
                   key={href}
                   href={href}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "font-sans text-[14px] font-semibold no-underline transition-opacity",
                     isWhite

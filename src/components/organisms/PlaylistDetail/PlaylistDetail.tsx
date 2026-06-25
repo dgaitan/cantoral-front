@@ -39,7 +39,7 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
   return (
     <div className="min-h-screen bg-paper">
       {/* Hero header */}
-      <div className="bg-ink rounded-b-3xl px-5 pt-10 pb-8 lg:mx-auto lg:max-w-[860px] lg:rounded-3xl lg:mt-6 lg:px-10 lg:pt-10 lg:pb-10">
+      <header className="bg-ink rounded-b-3xl px-5 pt-10 pb-8 lg:mx-auto lg:max-w-[860px] lg:rounded-3xl lg:mt-6 lg:px-10 lg:pt-10 lg:pb-10">
         <div className="flex flex-col lg:flex-row lg:items-start lg:gap-8">
           <PlaylistCoverArt name={playlist.name} uuid={playlist.uuid} size="lg" className="hidden lg:block" />
 
@@ -75,14 +75,17 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Songs section */}
-      <div className="px-5 pt-6 pb-28 lg:max-w-[860px] lg:mx-auto lg:px-0 lg:pt-8">
+      <section
+        aria-labelledby="canciones-heading"
+        className="px-5 pt-6 pb-28 lg:max-w-[860px] lg:mx-auto lg:px-0 lg:pt-8"
+      >
         <div className="bg-white rounded-2xl border border-line px-5 pt-5 pb-2">
           <div className="flex items-center justify-between mb-1">
             <div>
-              <Heading as="h2" size="sm">Canciones</Heading>
+              <Heading as="h2" size="sm" id="canciones-heading">Canciones</Heading>
               {canManage && (
                 <p className="text-[12px] text-muted flex items-center gap-1 mt-0.5">
                   <GripVertical size={12} aria-hidden="true" />
@@ -128,7 +131,7 @@ export function PlaylistDetail({ playlist, initialSongs }: PlaylistDetailProps) 
             </p>
           )}
         </div>
-      </div>
+      </section>
 
       <AddSongsDialog
         playlist={playlist}

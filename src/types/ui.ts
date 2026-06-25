@@ -10,6 +10,8 @@ export interface HeadingProps {
   tone?: "ink" | "cream";
   /** Optional orange uppercase kicker rendered above the heading. */
   eyebrow?: string;
+  /** Optional id on the heading element (e.g. for aria-labelledby). */
+  id?: string;
   /** Layout-only overrides (margins, alignment) applied at the call site. */
   className?: string;
 }
