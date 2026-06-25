@@ -6,22 +6,7 @@ interface KeyBadgeProps {
 
 export function KeyBadge({ tone }: KeyBadgeProps) {
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 4,
-        fontFamily: "var(--font-jetbrains)",
-        fontSize: 11.5,
-        fontWeight: 600,
-        color: "var(--ink)",
-        background: "var(--gold-soft)",
-        padding: "4px 8px",
-        borderRadius: 7,
-        flexShrink: 0,
-        whiteSpace: "nowrap",
-      }}
-    >
+    <span className="inline-flex items-center gap-1 font-mono text-[11.5px] font-semibold text-ink bg-gold-soft px-2 py-1 rounded-[7px] shrink-0 whitespace-nowrap">
       <KeyRound size={12} aria-hidden="true" />
       {tone}
     </span>

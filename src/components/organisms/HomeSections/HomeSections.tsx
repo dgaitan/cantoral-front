@@ -35,7 +35,7 @@ export function HomeSections() {
           </div>
           <div className="flex gap-[14px] overflow-x-auto px-5 lg:px-0 pt-0.5 pb-2 [scrollbar-width:none]">
             {rail.map((song) => (
-              <SongCard key={song.id} song={song} width={150} />
+              <SongCard key={song.id} song={song} size="rail" />
             ))}
           </div>
         </section>

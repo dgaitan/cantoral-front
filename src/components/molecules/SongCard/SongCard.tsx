@@ -1,14 +1,18 @@
 import Link from "next/link";
 import { CoverArt } from "@/components/atoms/CoverArt/CoverArt";
 import { buildSongParam } from "@/lib/utils/song-param";
+import { cn } from "@/lib/utils/cn";
 import type { SongListItem } from "@/types";
 
 interface SongCardProps {
   song: SongListItem;
-  width?: number;
+  /** "rail" = fixed 150px card for horizontal carousels; "grid" (default) fills its cell. */
+  size?: "rail" | "grid";
 }
 
-export function SongCard({ song, width }: SongCardProps) {
+const COVER_SIZE = { rail: 150, grid: 130 } as const;
+
+export function SongCard({ song, size = "grid" }: SongCardProps) {
   const href = `/canciones/${buildSongParam(song.id, song.slug)}`;
   const author = song.authors[0]?.name ?? "";
 
@@ -16,54 +20,19 @@ export function SongCard({ song, width }: SongCardProps) {
     <Link
       href={href}
       data-testid="song-card"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 10,
-        background: "#fff",
-        border: "1px solid var(--line)",
-        borderRadius: 16,
-        padding: 12,
-        cursor: "pointer",
-        textAlign: "left",
-        textDecoration: "none",
-        flexShrink: 0,
-        width: width ?? undefined,
-        boxShadow:
-          "0 1px 3px rgba(10,29,43,.08), 0 4px 16px rgba(10,29,43,.06)",
-      }}
+      className={cn(
+        "flex flex-col gap-2.5 shrink-0 cursor-pointer rounded-2xl border border-line bg-white p-3 text-left no-underline",
+        "shadow-[0_1px_3px_rgba(10,29,43,.08),0_4px_16px_rgba(10,29,43,.06)]",
+        size === "rail" && "w-[150px]"
+      )}
     >
-      <CoverArt song={song} size={width ?? 130} radius={11} showCategory />
-      <div style={{ minWidth: 0 }}>
-        <div
-          style={{
-            fontFamily: "var(--font-hanken)",
-            fontSize: 14,
-            fontWeight: 600,
-            color: "var(--ink)",
-            lineHeight: 1.25,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
+      <CoverArt song={song} size={COVER_SIZE[size]} radius={11} showCategory />
+      <div className="min-w-0">
+        <div className="font-sans text-sm font-semibold text-ink leading-tight line-clamp-2">
           {song.name}
         </div>
         {author && (
-          <div
-            style={{
-              fontFamily: "var(--font-hanken)",
-              fontSize: 12,
-              color: "var(--muted)",
-              marginTop: 3,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {author}
-          </div>
+          <div className="font-sans text-xs text-muted mt-[3px] truncate">{author}</div>
         )}
       </div>
     </Link>

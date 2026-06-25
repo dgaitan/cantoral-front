@@ -9,7 +9,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-ink text-cream">
+    <footer className="relative overflow-hidden bg-ink text-cream mt-20">
       {/* Decorative concentric circles (top-right), matching the hero motif. */}
       <svg
         viewBox="0 0 400 200"
