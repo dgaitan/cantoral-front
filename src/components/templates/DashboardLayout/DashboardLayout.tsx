@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Navbar } from "@/components/organisms/Navbar/Navbar";
+import { Footer } from "@/components/organisms/Footer/Footer";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
         <main className="flex-1 min-w-0">{children}</main>
       </div>
+      <Footer />
     </>
   );
 }

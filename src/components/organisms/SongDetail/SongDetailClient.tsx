@@ -19,6 +19,7 @@ import { SongDetailSimilar } from "./SongDetailSimilar";
 import { SongDetailBreadcrumb } from "./SongDetailBreadcrumb";
 import type { SongDetailProps } from "@/types/song";
 import type { DjangoResponse, Song } from "@/types";
+import { Container } from "@/components/templates/Grid/Container";
 
 export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
   const router = useRouter();
@@ -61,7 +62,7 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
       {/* Single responsive grid:
           mobile  → 1 col, sections stack in natural order
           desktop → [220px | 1fr | 220px] 3-col */}
-      <div className="max-w-[1100px] mx-auto px-5 pt-5 lg:px-8 lg:pt-12 lg:pb-12">
+      <Container className="px-5 pt-5 lg:pt-12 lg:pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] lg:gap-8 lg:items-start">
 
           {/* Col 1 — song info + controls */}
@@ -119,7 +120,7 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
             )}
           </div>
         </div>
-      </div>
+      </Container>
 
       <div className="h-[90px] lg:hidden" />
     </div>

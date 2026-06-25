@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { HomeHero } from "@/components/organisms/HomeHero/HomeHero";
 import { HomeSections } from "@/components/organisms/HomeSections/HomeSections";
 import { Navigation } from "@/components/organisms/Navigation/Navigation";
+import { Footer } from "@/components/organisms/Footer/Footer";
 import { buildWebSiteJsonLd, jsonLdHtml } from "@/lib/utils/seo";
 import { SITE_DESCRIPTION, SITE_URL } from "@/lib/seo/site";
 
@@ -24,7 +25,7 @@ export default function HomePage() {
         <HomeHero />
         <HomeSections />
       </main>
-      <div className="h-[90px]" />
+      <Footer />
     </div>
   );
 }
