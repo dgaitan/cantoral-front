@@ -5,7 +5,7 @@ import { HomeHeroFeatured } from "./HomeHeroFeatured";
 
 export function HomeHero() {
   return (
-    <div className="bg-ink px-5 pt-[88px] pb-[30px] rounded-b-[28px] relative overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 lg:rounded-b-[36px]">
+    <header className="bg-ink px-5 pt-[88px] pb-[30px] rounded-b-[28px] relative overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 lg:rounded-b-[36px]">
       {/* Mobile decorative circles */}
       <svg
         viewBox="0 0 300 200"
@@ -66,6 +66,6 @@ export function HomeHero() {
           </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 }

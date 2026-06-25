@@ -25,6 +25,7 @@ export function CategoryChips({
             key={c.id}
             size="sm"
             variant={active ? "secondary" : "ghost"}
+            aria-pressed={active}
             onPress={() => onChange(c.id as string | "all")}
             className="shrink-0 rounded-full text-[13.5px] font-semibold px-3.5"
           >

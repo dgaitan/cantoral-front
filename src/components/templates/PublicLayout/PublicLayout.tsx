@@ -10,7 +10,9 @@ export function PublicLayout({ children }: PublicLayoutProps) {
     <>
       {/* <Navbar /> */}
       <Navigation logoStyle="normal" showLogo={true} />
-      <main className="flex-1 pt-12 lg:pt-[68px]">{children}</main>
+      <main id="contenido" tabIndex={-1} className="flex-1 pt-12 lg:pt-[68px]">
+        {children}
+      </main>
     </>
   );
 }
