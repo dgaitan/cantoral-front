@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Search, User } from "lucide-react";
 import { Logo } from "@/components/atoms/Logo/Logo";
+import { cn } from "@/lib/utils/cn";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -16,56 +17,28 @@ export function Navbar() {
 
   return (
     <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 30,
-        padding: "12px 18px",
-        background: scrolled ? "rgba(250,247,241,0.88)" : "var(--paper)",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
-        WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: `1px solid ${scrolled ? "var(--line)" : "transparent"}`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        transition: "all 0.2s",
-      }}
+      className={cn(
+        "sticky top-0 z-30 flex items-center justify-between px-[18px] py-3 transition-all duration-200",
+        scrolled
+          ? "bg-paper/[0.88] backdrop-blur-[12px] border-b border-line"
+          : "bg-paper border-b border-transparent"
+      )}
     >
-      <Link href="/" style={{ textDecoration: "none" }}>
+      <Link href="/" className="no-underline">
         <Logo size={24} />
       </Link>
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="flex gap-2">
         <Link
           href="/explorar"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            border: "1px solid var(--line)",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "var(--ink)",
-          }}
           aria-label="Buscar"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-white text-ink"
         >
           <Search size={20} />
         </Link>
         <Link
           href="/auth/login"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            border: "1px solid var(--line)",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "var(--ink)",
-          }}
           aria-label="Mi cuenta"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-white text-ink"
         >
           <User size={20} />
         </Link>

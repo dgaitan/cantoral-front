@@ -7,6 +7,7 @@ import { Heading } from "@/components/atoms/Heading/Heading";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { PlaylistCard } from "@/components/molecules/PlaylistCard/PlaylistCard";
 import { PlaylistDialog } from "@/components/organisms/PlaylistDialog/PlaylistDialog";
+import { Container } from "@/components/templates/Grid/Container";
 import { usePlaylists } from "@/hooks/usePlaylists";
 import { useAuth } from "@/hooks/useAuth";
 import type { Playlist } from "@/types/playlist";
@@ -26,7 +27,7 @@ export default function ListasPage() {
   }
 
   return (
-    <div className="max-w-[1100px] mx-auto px-5 lg:px-8 pt-8 pb-28">
+    <Container className="px-5 pt-8 pb-28">
       {/* Page header */}
       <div className="flex items-start justify-between mb-6">
         <Heading size="lg" eyebrow="Descubre y comparte">
@@ -80,6 +81,6 @@ export default function ListasPage() {
         onOpenChange={setCreateOpen}
         onSuccess={handleCreated}
       />
-    </div>
+    </Container>
   );
 }

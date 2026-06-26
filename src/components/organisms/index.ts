@@ -1,3 +1,4 @@
+export { Footer } from "./Footer/Footer";
 export { HomeHero } from "./HomeHero/HomeHero";
 export { HomeSections } from "./HomeSections/HomeSections";
 export { SongList } from "./SongList/SongList";

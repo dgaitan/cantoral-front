@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Heading } from "@/components/atoms/Heading/Heading";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { HomeHeroFeatured } from "./HomeHeroFeatured";
+import { Container } from "@/components/templates/Grid/Container";
 
 export function HomeHero() {
   return (
@@ -30,7 +31,7 @@ export function HomeHero() {
       </svg>
 
       {/* Content */}
-      <div className="relative max-w-[1100px] mx-auto lg:px-8">
+      <Container className="relative">
         {/* Mobile: single column; Desktop: 2-column grid */}
         <div className="lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:pt-[120px] lg:pb-[80px]">
           {/* Left column */}
@@ -65,7 +66,7 @@ export function HomeHero() {
             <HomeHeroFeatured />
           </div>
         </div>
-      </div>
+      </Container>
     </header>
   );
 }

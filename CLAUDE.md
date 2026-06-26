@@ -96,6 +96,15 @@ organisms/SongPresentation/
 
 **Reference pattern:** `src/components/molecules/LoginForm/LoginForm.tsx` (post-refactor).
 
+**Page container — never hardcode `max-w-[…] mx-auto`.** The site width lives in ONE place:
+`<Container>` (`src/components/templates/Grid/Container.tsx`). Always wrap page/section content in
+`<Container>` instead of writing `max-w-[1100px] mx-auto lg:px-8` (or any `max-w-… mx-auto`) by
+hand — so the whole site can be re-sized from a single file. Pass extra layout classes (mobile
+`px-5`, padding, `sticky`, etc.) via `className`; render a landmark with `as` (e.g.
+`<Container as="header">`, `<Container as="section" aria-label="…">`); override the width per-use
+with `className="max-w-[860px]"` when a section is intentionally narrower. `twMerge` resolves the
+conflict so the override wins.
+
 ### API Layer
 
 There is **no Axios client** and no client-side Django access. All Django traffic is server-side via `djangoFetch` (`src/lib/django/client.ts`) against `API_URL_INTERNAL`. The client only talks to internal Next.js endpoints: Server Actions (`src/actions/`) for mutations and BFF Route Handlers (`src/app/api/*`) for interactive reads, fetched with `src/lib/api/fetcher.ts`. Song detail pages fetch at `revalidate: 3600`; `toggleFavorite` revalidates `song-${id}`.

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/atoms/Logo/Logo";
+import { Container } from "@/components/templates/Grid/Container";
 import { SearchBar } from "@/components/molecules/SearchBar/SearchBar";
 import { cn } from "@/lib/utils/cn";
 import APP_URLS from "@/lib/constants";
@@ -26,7 +27,7 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
 
   return (
     <div className="absolute top-0 left-0 right-0 z-50">
-      <div className="max-w-[1100px] mx-auto w-full px-5 lg:px-8">
+      <Container className="w-full px-5">
         <div className="flex items-center justify-between w-full py-4 lg:py-[18px]">
           {showLogo && (
             <Link href="/" className="shrink-0 no-underline">
@@ -98,7 +99,7 @@ export function Navigation({ logoStyle = "normal", showLogo = true }: Navigation
             )}
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

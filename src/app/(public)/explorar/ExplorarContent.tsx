@@ -11,6 +11,7 @@ import { CategoryChips } from "@/components/molecules/CategoryChips/CategoryChip
 import { SongRow } from "@/components/molecules/SongRow/SongRow";
 import { PaginationBar } from "@/components/molecules/PaginationBar/PaginationBar";
 import { buildSongParam } from "@/lib/utils/song-param";
+import { Container } from "@/components/templates/Grid/Container";
 
 const PAGE_SIZE = 20;
 
@@ -64,7 +65,7 @@ export function ExplorarContent() {
 
   return (
     <div className="bg-paper min-h-screen">
-      <header className="sticky -top-[60px] z-20 bg-paper/95 backdrop-blur-md border-b border-line px-5 pt-4 pb-2 max-w-[1100px] mx-auto lg:px-8">
+      <Container as="header" className="sticky -top-[60px] z-20 bg-paper/95 backdrop-blur-md border-b border-line px-5 pt-4 pb-2">
         <Heading className="mb-3.5">Explorar</Heading>
         <search>
           <SearchBar
@@ -80,9 +81,9 @@ export function ExplorarContent() {
             />
           </div>
         </search>
-      </header>
+      </Container>
 
-      <section aria-label="Resultados" className="max-w-[1100px] mx-auto px-5 lg:px-8">
+      <Container as="section" aria-label="Resultados" className="px-5">
         <div className="flex items-center justify-between pt-3">
           <span className="text-[13px] text-muted" aria-live="polite">
             {isLoading ? "Cargando…" : `${count} canciones`}
@@ -114,7 +115,7 @@ export function ExplorarContent() {
         )}
 
         <div className="h-[90px]" />
-      </section>
+      </Container>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCategories } from "@/hooks/useCategories";
 import { useSongs } from "@/hooks/useSongs";
 import { LiturgyMoments, SectionHead, SongCard, SongRow } from "@/components/molecules";
+import { Container } from "@/components/templates/Grid/Container";
 import { buildSongParam } from "@/lib/utils/song-param";
 
 export function HomeSections() {
@@ -14,7 +15,7 @@ export function HomeSections() {
   const recientes = songs.slice(0, 5);
 
   return (
-    <div className="max-w-[1100px] mx-auto lg:px-8">
+    <Container>
       {categories.length > 0 && (
         <section aria-label="Momentos de la liturgia">
           <LiturgyMoments categories={categories} />
@@ -34,7 +35,7 @@ export function HomeSections() {
           </div>
           <div className="flex gap-[14px] overflow-x-auto px-5 lg:px-0 pt-0.5 pb-2 [scrollbar-width:none]">
             {rail.map((song) => (
-              <SongCard key={song.id} song={song} width={150} />
+              <SongCard key={song.id} song={song} size="rail" />
             ))}
           </div>
         </section>
@@ -65,6 +66,6 @@ export function HomeSections() {
           </Link>
         </div>
       )}
-    </div>
+    </Container>
   );
 }
