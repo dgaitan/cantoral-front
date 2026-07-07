@@ -70,6 +70,13 @@ export function getPlaylists(page = 1, search?: string): Promise<PaginatedRespon
   });
 }
 
+export function getMyPlaylists(page = 1): Promise<PaginatedResponse<Playlist>> {
+  return djangoFetch<PaginatedResponse<Playlist>>("/v1/profile/playlists/", {
+    params: { page },
+    auth: true,
+  });
+}
+
 export function getPlaylist(uuid: string): Promise<DjangoResponse<Playlist>> {
   return djangoFetch<DjangoResponse<Playlist>>(`/v1/playlists/${uuid}/`, {
     optionalAuth: true,

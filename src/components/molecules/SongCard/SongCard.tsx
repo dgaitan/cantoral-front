@@ -10,7 +10,7 @@ interface SongCardProps {
   size?: "rail" | "grid";
 }
 
-const COVER_SIZE = { rail: 150, grid: 130 } as const;
+const COVER_SIZE = { rail: 175, grid: 130 } as const;
 
 export function SongCard({ song, size = "grid" }: SongCardProps) {
   const href = `/canciones/${buildSongParam(song.id, song.slug)}`;
@@ -23,7 +23,7 @@ export function SongCard({ song, size = "grid" }: SongCardProps) {
       className={cn(
         "flex flex-col gap-2.5 shrink-0 cursor-pointer rounded-2xl border border-line bg-white p-3 text-left no-underline",
         "shadow-[0_1px_3px_rgba(10,29,43,.08),0_4px_16px_rgba(10,29,43,.06)]",
-        size === "rail" && "w-[150px]"
+        size === "rail" && "w-[200px]"
       )}
     >
       <CoverArt song={song} size={COVER_SIZE[size]} radius={11} showCategory />
