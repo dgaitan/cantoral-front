@@ -1,4 +1,5 @@
 import { Eye, Heart, KeyRound } from "lucide-react";
+import { formatCompactNumber } from "@/lib/utils/format";
 import type { SongDetailMetaProps } from "@/types/song";
 
 type MetaStatProps = {
@@ -21,12 +22,6 @@ function MetaStat({ icon, label, value }: MetaStatProps) {
   );
 }
 
-function formatViews(views: number): string {
-  return views >= 1000
-    ? `${(views / 1000).toFixed(1)}k`
-    : views.toLocaleString("es");
-}
-
 export function SongDetailMeta({ displayKey, views, likes }: SongDetailMetaProps) {
   return (
     <div className="flex gap-[18px] pb-4">
@@ -34,7 +29,7 @@ export function SongDetailMeta({ displayKey, views, likes }: SongDetailMetaProps
         <MetaStat icon={<KeyRound size={15} />} label="Tono" value={displayKey} />
       )}
       {views != null && (
-        <MetaStat icon={<Eye size={15} />} label="Vistas" value={formatViews(views)} />
+        <MetaStat icon={<Eye size={15} />} label="Vistas" value={formatCompactNumber(views)} />
       )}
       {likes != null && (
         <MetaStat

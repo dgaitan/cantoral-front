@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useSongs } from "@/hooks/useSongs";
 import { fetcher } from "@/lib/api/fetcher";
 import { useAuth } from "@/hooks/useAuth";
+import { recordSongView } from "@/actions/songs";
 import { Heading } from "@/components/atoms/Heading/Heading";
 import { ChordControls } from "@/components/organisms/ChordControls/ChordControls";
 import { SongLyricsRenderer } from "@/components/organisms/SongLyricsRenderer/SongLyricsRenderer";
@@ -28,6 +29,10 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
   const [fontSize, setFontSize] = useState(18);
 
   const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    void recordSongView(song.id);
+  }, [song.id]);
 
   const { data: freshSongResponse } = useSWR(
     isAuthenticated ? ["song", song.id] : null,
@@ -69,7 +74,11 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
           <div className="lg:sticky lg:top-[84px]">
             <SongDetailHeader song={song} />
             <SongDetailMeta displayKey={displayKey} views={song.views} likes={song.likes} />
-            <SongDetailActions presentacionHref={presentacionHref} />
+            <SongDetailActions
+              presentacionHref={presentacionHref}
+              songId={song.id}
+              isFavorited={isFavorited}
+            />
 
             {hasLyrics && (
               <div

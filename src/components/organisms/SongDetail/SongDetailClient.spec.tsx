@@ -1,10 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { SongDetailClient } from "./SongDetailClient";
 import type { Song } from "@/types";
 
 vi.mock("@/hooks/useSongs", () => ({
   useSongs: () => ({ data: null }),
+}));
+
+const recordSongView = vi.fn();
+vi.mock("@/actions/songs", () => ({
+  recordSongView: (...args: unknown[]) => recordSongView(...args),
 }));
 
 const mockSong: Song = {
@@ -58,5 +63,14 @@ describe("Chord Transport — SongDetailClient page-load default", () => {
     );
     const chordLines = screen.getAllByTestId("chord-line");
     expect(chordLines[0]).toHaveTextContent(/SOL\s+DO\s+SOL\s+DO/);
+  });
+});
+
+describe("SongDetailClient — view tracking", () => {
+  it("registers a view for the rendered song on mount", async () => {
+    render(
+      <SongDetailClient song={mockSong} presentacionHref="/canciones/1-cristo-vive-en-mi/presentacion" />
+    );
+    await waitFor(() => expect(recordSongView).toHaveBeenCalledWith(mockSong.id));
   });
 });

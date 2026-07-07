@@ -111,6 +111,8 @@ export interface SongDetailMetaProps {
 
 export interface SongDetailActionsProps {
   presentacionHref: string;
+  songId: string;
+  isFavorited: boolean;
 }
 
 export interface SongDetailVideoProps {
