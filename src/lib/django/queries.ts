@@ -3,6 +3,7 @@ import { djangoFetch } from "./client";
 import type {
   Category,
   DjangoResponse,
+  PaginatedData,
   PaginatedResponse,
   Playlist,
   PlaylistSong,
@@ -16,11 +17,21 @@ import type {
  * route handlers so there is a single, typed data path to Django.
  */
 
-export function getSongs(query: SongsQuery = {}): Promise<PaginatedResponse<SongListItem>> {
-  return djangoFetch<PaginatedResponse<SongListItem>>("/v1/songs/", {
-    params: query,
-    next: { revalidate: 60 },
-  });
+export async function getSongs(query: SongsQuery = {}): Promise<PaginatedResponse<SongListItem>> {
+  // When `limit` is passed, Django returns `data` as a plain array instead of
+  // the paginated envelope — normalize here so every consumer can always read
+  // `data.results`/`data.count`.
+  const raw = await djangoFetch<{
+    success: boolean;
+    data: PaginatedData<SongListItem> | SongListItem[];
+    errors: Record<string, string[]> | null;
+    status: number;
+  }>("/v1/songs/", { params: query, next: { revalidate: 60 } });
+
+  const data: PaginatedData<SongListItem> = Array.isArray(raw.data)
+    ? { results: raw.data, count: raw.data.length, next: null, previous: null }
+    : raw.data;
+  return { ...raw, data };
 }
 
 export function getSong(id: string): Promise<DjangoResponse<Song>> {

@@ -1,3 +1,5 @@
+import type { SongsQuery } from "./query";
+
 export interface Author {
   id: string;
   name: string;
@@ -120,8 +122,11 @@ export interface SongDetailVideoProps {
 }
 
 export interface SongDetailSimilarProps {
-  songs: SongListItem[];
-  categoryName?: string;
+  testId: string;
+  currentSongId: string;
+  query: SongsQuery | null;
+  kicker: string;
+  title: string;
 }
 
 export interface SongLyricsRendererProps {

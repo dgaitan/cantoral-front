@@ -5,10 +5,15 @@ import { CoverArt } from "@/components/atoms/CoverArt/CoverArt";
 import { KeyBadge } from "@/components/atoms/KeyBadge/KeyBadge";
 import { useSongs } from "@/hooks/useSongs";
 import { buildSongParam } from "@/lib/utils/song-param";
+import { HOME_HERO_COUNT, HOME_RECIENTES_COUNT } from "@/lib/constants/home";
 
 export function HomeHeroFeatured() {
-  const { data } = useSongs();
-  const songs = (data?.data?.results ?? []).slice(0, 3);
+  const { data } = useSongs({
+    order_by: "created_at",
+    order: "desc",
+    limit: HOME_HERO_COUNT + HOME_RECIENTES_COUNT,
+  });
+  const songs = (data?.data?.results ?? []).slice(0, HOME_HERO_COUNT);
 
   if (songs.length === 0) return null;
 

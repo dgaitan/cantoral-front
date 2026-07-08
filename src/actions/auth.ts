@@ -2,6 +2,7 @@
 
 import { djangoFetch } from "@/lib/django/client";
 import { createSession, deleteSession, getSession } from "@/lib/session/session";
+import { isRateLimited, getClientIp } from "@/lib/rate-limit";
 import {
   loginSchema,
   registerSchema,
@@ -13,10 +14,13 @@ import type { ActionResult } from "@/types/action";
 import type { AuthTokens, DjangoResponse, User } from "@/types";
 import { ok, fail, fromError } from "./_helpers";
 
+const RATE_LIMIT_MESSAGE = "Demasiados intentos. Intenta de nuevo en un minuto.";
+
 /** Request an OTP via email + password. No session yet — the user must verify. */
 export async function login(input: unknown): Promise<ActionResult> {
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) return fail("Datos inválidos", parsed.error.flatten().fieldErrors);
+  if (isRateLimited(`login:${await getClientIp()}`)) return fail(RATE_LIMIT_MESSAGE);
   try {
     await djangoFetch<DjangoResponse<null>>("/auth/login", { method: "POST", body: parsed.data });
     return ok(undefined);
@@ -29,6 +33,7 @@ export async function login(input: unknown): Promise<ActionResult> {
 export async function register(input: unknown): Promise<ActionResult> {
   const parsed = registerSchema.safeParse(input);
   if (!parsed.success) return fail("Datos inválidos", parsed.error.flatten().fieldErrors);
+  if (isRateLimited(`register:${await getClientIp()}`)) return fail(RATE_LIMIT_MESSAGE);
   try {
     await djangoFetch<DjangoResponse<null>>("/auth/register", { method: "POST", body: parsed.data });
     return ok(undefined);
@@ -41,6 +46,7 @@ export async function register(input: unknown): Promise<ActionResult> {
 export async function requestMagicLink(input: unknown): Promise<ActionResult> {
   const parsed = magicLinkSchema.safeParse(input);
   if (!parsed.success) return fail("Correo inválido", parsed.error.flatten().fieldErrors);
+  if (isRateLimited(`magic-link:${await getClientIp()}`)) return fail(RATE_LIMIT_MESSAGE);
   try {
     await djangoFetch<DjangoResponse<null>>("/auth/request-link/", {
       method: "POST",
@@ -56,6 +62,7 @@ export async function requestMagicLink(input: unknown): Promise<ActionResult> {
 export async function verifyOtp(input: unknown): Promise<ActionResult<{ user: User }>> {
   const parsed = otpSchema.safeParse(input);
   if (!parsed.success) return fail("Código inválido", parsed.error.flatten().fieldErrors);
+  if (isRateLimited(`verify-otp:${await getClientIp()}`)) return fail(RATE_LIMIT_MESSAGE);
   return completeVerification(parsed.data.email, parsed.data.token, "/auth/verify");
 }
 

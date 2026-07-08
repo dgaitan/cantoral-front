@@ -6,13 +6,26 @@ import { useSongs } from "@/hooks/useSongs";
 import { LiturgyMoments, SectionHead, SongCard, SongRow } from "@/components/molecules";
 import { Container } from "@/components/templates/Grid/Container";
 import { buildSongParam } from "@/lib/utils/song-param";
+import { HOME_HERO_COUNT, HOME_RECIENTES_COUNT, HOME_MAS_BUSCADAS_COUNT } from "@/lib/constants/home";
 
 export function HomeSections() {
   const { data: categories = [] } = useCategories();
-  const { data: songsData } = useSongs();
-  const songs = songsData?.data?.results ?? [];
-  const rail = songs.slice(0, 6);
-  const recientes = songs.slice(0, 5);
+
+  const { data: latestData } = useSongs({
+    order_by: "created_at",
+    order: "desc",
+    limit: HOME_HERO_COUNT + HOME_RECIENTES_COUNT,
+  });
+  const latest = latestData?.data?.results ?? [];
+  // Skip the songs already shown in the hero (same positions, same underlying fetch).
+  const recientes = latest.slice(HOME_HERO_COUNT, HOME_HERO_COUNT + HOME_RECIENTES_COUNT);
+
+  const { data: topViewedData } = useSongs({
+    order_by: "views",
+    order: "desc",
+    limit: HOME_MAS_BUSCADAS_COUNT,
+  });
+  const rail = topViewedData?.data?.results ?? [];
 
   return (
     <Container>
@@ -55,7 +68,7 @@ export function HomeSections() {
         </section>
       )}
 
-      {songs.length === 0 && (
+      {rail.length === 0 && recientes.length === 0 && (
         <div className="px-5 lg:px-0 py-10 text-center">
           <p className="font-sans text-muted mb-4">Explora el catálogo de canciones</p>
           <Link

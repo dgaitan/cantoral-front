@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { djangoFetch } from "@/lib/django/client";
+import { songIdSchema } from "@/lib/schemas/params";
 
 const VIEW_COOKIE_MAX_AGE = 60 * 60 * 24; // 24h dedup window
 
@@ -12,9 +13,11 @@ const VIEW_COOKIE_MAX_AGE = 60 * 60 * 24; // 24h dedup window
  * intentional and views are an eventually-consistent metric.
  */
 export async function recordSongView(songId: string): Promise<void> {
-  // Django ids arrive as numbers at runtime despite the `Song.id: string` type.
-  const safeId = String(songId).replace(/[^a-zA-Z0-9_-]/g, "");
-  const cookieName = `sv_${safeId}`;
+  const parsed = songIdSchema.safeParse(songId);
+  if (!parsed.success) return;
+  const id = parsed.data;
+
+  const cookieName = `sv_${id}`;
   const cookieStore = await cookies();
 
   if (cookieStore.get(cookieName)) return;
@@ -28,7 +31,7 @@ export async function recordSongView(songId: string): Promise<void> {
   });
 
   try {
-    await djangoFetch(`/v1/songs/${songId}/view/`, { method: "POST" });
+    await djangoFetch(`/v1/songs/${id}/view/`, { method: "POST" });
   } catch {
     // Swallow: a visitor must never see an error over a view count.
   }

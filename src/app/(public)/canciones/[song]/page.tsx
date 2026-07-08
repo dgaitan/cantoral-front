@@ -4,7 +4,9 @@ import { SongDetailClient } from "@/components/organisms/SongDetail/SongDetailCl
 import { parseSongParam, buildSongParam } from "@/lib/utils/song-param";
 import { lyricsToPlainText } from "@/lib/lyrics/parser";
 import { buildSongJsonLd, jsonLdHtml } from "@/lib/utils/seo";
-import type { DjangoResponse, Song } from "@/types";
+import { getSong as fetchSong } from "@/lib/django/queries";
+import { songIdSchema } from "@/lib/schemas/params";
+import type { Song } from "@/types";
 
 export const revalidate = 3600;
 
@@ -13,15 +15,10 @@ interface Props {
 }
 
 async function getSong(id: string): Promise<Song | null> {
-  const apiUrl = process.env.API_URL_INTERNAL ?? process.env.NEXT_PUBLIC_API_URL;
-  try {
-    const res = await fetch(`${apiUrl}/v1/songs/${id}/`, { next: { revalidate: 3600, tags: [`song-${id}`] } });
-    if (!res.ok) return null;
-    const body: DjangoResponse<Song> = await res.json();
-    return body.success ? (body.data as Song) : null;
-  } catch {
-    return null;
-  }
+  const parsed = songIdSchema.safeParse(id);
+  if (!parsed.success) return null;
+  const res = await fetchSong(parsed.data).catch(() => null);
+  return res?.success ? (res.data ?? null) : null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

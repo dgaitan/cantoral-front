@@ -376,19 +376,26 @@ test.describe("Song Detail Redesign — Video section", () => {
 //  8. SIMILAR SONGS
 // ─────────────────────────────────────────────────────
 
+const SIMILAR_WIDGET_TEST_IDS = ["similar-by-tag", "similar-by-author", "similar-trending"];
+
 test.describe("Song Detail Redesign — Similar songs", () => {
   test.beforeEach(async ({ page }) => {
     await mockSongsListApi(page);
   });
 
-  test("similar songs section heading is visible", async ({ page }) => {
+  test("at least one related-songs widget is visible", async ({ page }) => {
     await page.goto(DETAIL_URL);
-    await expect(page.locator('[data-testid="similar-songs"]')).toBeVisible();
+    const counts = await Promise.all(
+      SIMILAR_WIDGET_TEST_IDS.map((testId) => page.locator(`[data-testid="${testId}"]`).count())
+    );
+    expect(counts.some((count) => count > 0)).toBe(true);
   });
 
-  test("each song row links to the correct detail page", async ({ page }) => {
+  test("each song row in every related-songs widget links to the correct detail page", async ({ page }) => {
     await page.goto(DETAIL_URL);
-    const rows = page.locator('[data-testid="similar-songs"] [data-testid="song-row"]');
+    const rows = page.locator(
+      SIMILAR_WIDGET_TEST_IDS.map((testId) => `[data-testid="${testId}"] [data-testid="song-row"]`).join(", ")
+    );
     const count = await rows.count();
     if (count > 0) {
       const href = await rows.first().getAttribute("href");

@@ -33,7 +33,7 @@ export default function PerfilPage() {
     <div className="bg-paper min-h-screen">
       <div className="px-5 pt-8 pb-6 border-b border-line">
         <Container>
-          <Heading as="p" size="sm">
+          <Heading size="sm">
             {user.name}
           </Heading>
           <p className="text-[14px] text-muted mt-1">{user.email}</p>

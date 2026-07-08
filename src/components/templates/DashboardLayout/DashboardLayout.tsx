@@ -30,7 +30,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             ))}
           </nav>
         </aside>
-        <main className="flex-1 min-w-0">{children}</main>
+        <main id="contenido" tabIndex={-1} className="flex-1 min-w-0">{children}</main>
       </div>
       <Footer />
     </>

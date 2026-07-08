@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { useSongs } from "@/hooks/useSongs";
 import { fetcher } from "@/lib/api/fetcher";
 import { useAuth } from "@/hooks/useAuth";
 import { recordSongView } from "@/actions/songs";
@@ -41,15 +40,13 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
   );
   const isFavorited = freshSongResponse?.data?.is_favorited ?? song.is_favorited ?? false;
 
-  const { data: similarData } = useSongs();
-  const similarSongs = (similarData?.data?.results ?? [])
-    .filter((s) => s.id !== song.id)
-    .slice(0, 5);
-
   const hasLyrics = !!song.lyrics;
   const baseKey = song.tone ?? "";
   const displayKey = baseKey ? transposeKey(baseKey, steps) : "";
   const categoryName = song.tags?.[0]?.name;
+  const authorName = song.authors?.[0]?.name;
+  const tagId = song.tags?.[0] ? Number(song.tags[0].id) : undefined;
+  const authorId = song.authors?.[0] ? Number(song.authors[0].id) : undefined;
 
   return (
     <div className="bg-[var(--paper)] min-h-screen">
@@ -122,11 +119,29 @@ export function SongDetailClient({ song, presentacionHref }: SongDetailProps) {
             {song.youtube_url && <SongDetailVideo youtubeUrl={song.youtube_url} />}
           </div>
 
-          {/* Col 3 — similar songs */}
+          {/* Col 3 — related songs */}
           <div>
-            {similarSongs.length > 0 && (
-              <SongDetailSimilar songs={similarSongs} categoryName={categoryName} />
-            )}
+            <SongDetailSimilar
+              testId="similar-by-tag"
+              currentSongId={song.id}
+              query={tagId ? { tag_id: tagId, order_by: "rand" } : null}
+              kicker="También te puede gustar"
+              title={categoryName ? `Más de ${categoryName}` : "Canciones similares"}
+            />
+            <SongDetailSimilar
+              testId="similar-by-author"
+              currentSongId={song.id}
+              query={authorId ? { author_id: authorId, order_by: "rand" } : null}
+              kicker="Del mismo autor"
+              title={authorName ?? "Del mismo autor"}
+            />
+            <SongDetailSimilar
+              testId="similar-trending"
+              currentSongId={song.id}
+              query={{ order_by: "views", order: "desc" }}
+              kicker="Tendencias"
+              title="Las más escuchadas"
+            />
           </div>
         </div>
       </Container>

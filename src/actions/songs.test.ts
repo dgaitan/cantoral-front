@@ -59,13 +59,17 @@ describe("recordSongView", () => {
     await expect(recordSongView("482")).resolves.toBeUndefined();
   });
 
-  it("sanitizes the song id before building the cookie name", async () => {
+  it("rejects a malformed song id without setting a cookie or calling Django", async () => {
     await recordSongView("482;evil");
 
-    expect(cookieJar.set).toHaveBeenCalledWith(
-      "sv_482evil",
-      "1",
-      expect.any(Object),
-    );
+    expect(cookieJar.set).not.toHaveBeenCalled();
+    expect(djangoFetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects a path-traversal payload without setting a cookie or calling Django", async () => {
+    await recordSongView("../../etc/passwd");
+
+    expect(cookieJar.set).not.toHaveBeenCalled();
+    expect(djangoFetch).not.toHaveBeenCalled();
   });
 });
