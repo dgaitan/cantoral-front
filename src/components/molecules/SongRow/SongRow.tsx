@@ -8,9 +8,10 @@ interface SongRowProps {
   song: SongListItem;
   index?: number;
   href: string;
+  showTone?: boolean;
 }
 
-export function SongRow({ song, index, href }: SongRowProps) {
+export function SongRow({ song, index, href, showTone = true }: SongRowProps) {
   const author = song.authors[0]?.name ?? "";
 
   return (
@@ -33,7 +34,7 @@ export function SongRow({ song, index, href }: SongRowProps) {
           <div className="text-[13px] text-muted truncate mt-0.5">{author}</div>
         )}
       </div>
-      {song.tone && <KeyBadge tone={song.tone} />}
+      {showTone && song.tone && <KeyBadge tone={song.tone} />}
     </Link>
   );
 }

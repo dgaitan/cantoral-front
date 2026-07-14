@@ -20,7 +20,7 @@ export function SongDetailSimilar({ testId, currentSongId, query, kicker, title 
     <div data-testid={testId} className="mb-8">
       <SectionHead kicker={kicker} title={title} />
       {songs.map((s) => (
-        <SongRow key={s.id} song={s} href={`/canciones/${buildSongParam(s.id, s.slug)}`} />
+        <SongRow key={s.id} song={s} href={`/canciones/${buildSongParam(s.id, s.slug)}`} showTone={false} />
       ))}
     </div>
   );
